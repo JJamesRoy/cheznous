@@ -16,7 +16,8 @@ cd "$(dirname "$0")/.."
 
 need() { [ -n "${!1:-}" ] || { echo "Variable manquante : $1" >&2; exit 1; }; }
 need SUPABASE_ACCESS_TOKEN; need SUPABASE_DB_PASSWORD; need VERCEL_TOKEN
-SB="pnpm exec supabase"
+SB="$PWD/node_modules/.bin/supabase"   # absolute: also used from a temp dir below
+[ -x "$SB" ] || pnpm install --frozen-lockfile
 VC="pnpm dlx vercel@65.9.0 --token $VERCEL_TOKEN ${VERCEL_SCOPE:+--scope $VERCEL_SCOPE}"
 
 # ---------------------------------------------------------------- Supabase project
@@ -30,8 +31,10 @@ fi
 SUPABASE_URL="https://${SUPABASE_PROJECT_REF}.supabase.co"
 
 echo "→ Liaison et migrations…"
+# config.toml points at a git-ignored local dev key; the CLI refuses to load the config without the file.
+[ -f supabase/signing_keys.json ] || echo "[]" > supabase/signing_keys.json
 $SB link --project-ref "$SUPABASE_PROJECT_REF" --password "$SUPABASE_DB_PASSWORD"
-$SB db push --password "$SUPABASE_DB_PASSWORD"
+$SB db push --linked --password "$SUPABASE_DB_PASSWORD"
 
 PUBLISHABLE_KEY=$($SB projects api-keys --project-ref "$SUPABASE_PROJECT_REF" -o json | node -e '
   const keys = JSON.parse(require("fs").readFileSync(0));
@@ -41,8 +44,16 @@ PUBLISHABLE_KEY=$($SB projects api-keys --project-ref "$SUPABASE_PROJECT_REF" -o
 # ---------------------------------------------------------------- Vercel project + URL
 echo "→ Projet Vercel…"
 $VC link --yes --project chez-nous >/dev/null
-APP_URL="${APP_URL:-https://$($VC project inspect chez-nous 2>/dev/null | awk '/Domains?/{getline; print $1; exit}' || true)}"
-[ "$APP_URL" = "https://" ] && APP_URL="https://chez-nous.vercel.app"
+# Vercel assigns a suffixed domain when "chez-nous.vercel.app" is taken: ask the API for the real one.
+if [ -z "${APP_URL:-}" ]; then
+  TEAM_ID=$(node -e 'try{console.log(JSON.parse(require("fs").readFileSync(".vercel/project.json")).orgId)}catch{}')
+  DOMAIN=$(curl -fsS -H "Authorization: Bearer $VERCEL_TOKEN" \
+    "https://api.vercel.com/v9/projects/chez-nous/domains${TEAM_ID:+?teamId=$TEAM_ID}" | node -e '
+    const d = (JSON.parse(require("fs").readFileSync(0)).domains ?? []).filter((x) => x.verified && !x.redirect);
+    console.log((d.find((x) => !x.name.endsWith(".vercel.app")) ?? d[0])?.name ?? "");')
+  [ -n "$DOMAIN" ] || { echo "Impossible de déterminer le domaine Vercel : définis APP_URL." >&2; exit 1; }
+  APP_URL="https://$DOMAIN"
+fi
 echo "  URL : $APP_URL"
 
 # ---------------------------------------------------------------- Auth config (OAuth server, redirects)
