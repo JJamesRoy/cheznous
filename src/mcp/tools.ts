@@ -9,6 +9,12 @@ import * as shopping from "../server/usecases/shopping";
 import * as tasks from "../server/usecases/tasks";
 import * as notes from "../server/usecases/notes";
 import * as recurring from "../server/usecases/recurring";
+import * as condo from "../server/usecases/condo";
+import * as keydates from "../server/usecases/keydates";
+import * as goals from "../server/usecases/goals";
+import * as dashboard from "../server/usecases/dashboard";
+import { requireHousehold } from "../server/ctx";
+import { resolveGoal } from "../server/support";
 import { formatMoney } from "../domain/money";
 
 /**
@@ -470,5 +476,83 @@ export function registerTools(register: Register) {
     annotations: WRITE,
     run: async (ctx, a) =>
       execute(notes.createNote, ctx, { title: a.title, bodyMd: a.body, tags: a.tags, pinned: a.pinned, isPrivate: a.private, idempotencyKey: a.idempotency_key }),
+  });
+
+  register({
+    name: "get_household_dashboard",
+    title: "Tableau de bord",
+    description: "Vue d'ensemble : balance entre partenaires, budget du mois (dépensé, restant, projection), factures à venir, tâches de la semaine, listes et objectifs.",
+    input: { upcoming_days: z.number().int().min(7).max(60).optional() },
+    annotations: READ,
+    run: async (ctx, a) => execute(dashboard.getDashboard, ctx, { upcomingDays: a.upcoming_days ?? 21 }),
+  });
+
+  // ------------------------------------------------------------------ condo
+  register({
+    name: "get_property_info",
+    title: "Infos du condo",
+    description: "Copropriété : adresse, syndicat et gestionnaire, frais de condo (et part du fonds de prévoyance), assurance, taxe de bienvenue, cotisations spéciales, résumé de l'hypothèque.",
+    input: {},
+    annotations: READ,
+    run: async (ctx) => execute(condo.getProperty, ctx, {}),
+  });
+
+  register({
+    name: "get_mortgage_summary",
+    title: "Résumé de l'hypothèque",
+    description:
+      "Solde (d'après le dernier relevé du prêteur, sinon estimé), date de renouvellement et jours restants, versements, droit de remboursement anticipé restant cette année. « C'est quand le renouvellement de l'hypothèque ? »",
+    input: {},
+    annotations: READ,
+    run: async (ctx) => execute(condo.getMortgageSummary, ctx, {}),
+  });
+
+  register({
+    name: "list_property_documents",
+    title: "Documents du condo",
+    description: "Déclaration de copropriété, règlements, PV d'assemblée, budget du syndicat, attestation, carnet d'entretien, étude du fonds de prévoyance… Fichiers téléversés ou liens Google Drive.",
+    input: { doc_type: z.enum(condo.DOC_TYPES).optional() },
+    annotations: READ,
+    run: async (ctx, a) => execute(condo.listDocuments, ctx, { docType: a.doc_type }),
+  });
+
+  register({
+    name: "list_maintenance_tasks",
+    title: "Entretien",
+    description: "Tâches d'entretien à venir (par échéance) et historique des travaux avec coûts.",
+    input: { appliance_id: z.string().uuid().optional() },
+    annotations: READ,
+    run: async (ctx, a) => execute(condo.listMaintenance, ctx, { applianceId: a.appliance_id, historyLimit: 20 }),
+  });
+
+  register({
+    name: "get_key_dates",
+    title: "Dates importantes",
+    description: "Renouvellement hypothécaire, anniversaire du privilège de remboursement, assurance, assemblée générale, versements de taxes, taxe de bienvenue, garanties, entretien — sur les N prochains jours.",
+    input: { days: z.number().int().min(1).max(730).optional() },
+    annotations: READ,
+    run: async (ctx, a) => execute(keydates.keyDates, ctx, { days: a.days ?? 120 }),
+  });
+
+  // ------------------------------------------------------------------ goals
+  register({
+    name: "list_goals",
+    title: "Objectifs d'épargne",
+    description: "Objectifs (fonds d'urgence, remboursement anticipé de l'hypothèque…) avec épargné, progression, contributions par partenaire et montant mensuel suggéré.",
+    input: {},
+    annotations: READ,
+    run: async (ctx) => execute(goals.listGoals, ctx, {}),
+  });
+
+  register({
+    name: "get_goal_progress",
+    title: "Progression d'un objectif",
+    description: "Détail d'un objectif (par nom, accents ignorés, ou id) et ses contributions.",
+    input: { goal: z.string().max(100) },
+    annotations: READ,
+    run: async (ctx, a) => {
+      const g = await resolveGoal(requireHousehold(ctx), a.goal);
+      return execute(goals.getGoal, ctx, { id: g.id });
+    },
   });
 }

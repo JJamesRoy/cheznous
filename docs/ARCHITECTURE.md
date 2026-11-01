@@ -87,8 +87,8 @@ shopping_lists, shopping_items(… quantity, est_price_cents, url, image_url, pr
                 assignee, purchased_at, purchased_by, expense_id)
 tasks, task_checklist_items, task_completions
 notes(… body_md, is_private, pinned, tags[], search tsvector('french'))
-properties, mortgages, mortgage_prepayments, mortgage_balance_statements,
-property_documents (storage_path | external_url), appliances, maintenance_records,
+properties, mortgages, mortgage_prepayments, mortgage_statements,
+documents (storage_path | external_url; also note attachments), appliances, maintenance_records,
 capital_contributions, key dates (computed view over the above),
 projects, savings_goals, goal_contributions
 audit_logs(table_name, row_id, action, before jsonb, after jsonb, actor, at)  -- triggers

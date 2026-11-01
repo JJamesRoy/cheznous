@@ -135,3 +135,81 @@ describe("MCP server over Streamable HTTP with OAuth 2.1", () => {
     expect(data).toEqual([]);
   });
 });
+
+describe("MCP: the eight reference questions, through the tools", () => {
+  let c: Couple;
+  let client: Client;
+  const today = new Intl.DateTimeFormat("en-CA", { timeZone: "America/Toronto", year: "numeric", month: "2-digit", day: "2-digit" }).format(new Date());
+  const month = today.slice(0, 7);
+  const prev = (() => {
+    const [y, m] = month.split("-").map(Number);
+    return m === 1 ? `${y - 1}-12` : `${y}-${String(m - 1).padStart(2, "0")}`;
+  })();
+
+  beforeAll(async () => {
+    c = await createCouple(["Camille", "Alex"]);
+    client = await connect((await oauthAccessToken(c.b)).accessToken);
+    await run(c.a, expenses.createExpense, { amount: "100", description: "IGA", category: "Épicerie" });
+    await run(c.a, expenses.createExpense, { amount: "40", description: "Resto", category: "Resto", spentOn: `${prev}-10` });
+  });
+
+  it("exposes every tool from the brief", async () => {
+    const { tools } = await client.listTools();
+    const expected = [
+      "get_household_context", "get_household_dashboard", "list_expenses", "get_expense", "create_expense", "update_expense",
+      "get_balances", "create_settlement", "get_budget", "list_budgets", "get_spending_summary", "list_recurring_expenses",
+      "list_upcoming_bills", "list_shopping_lists", "get_shopping_list", "add_shopping_item", "update_shopping_item",
+      "mark_item_purchased", "list_tasks", "create_task", "update_task", "complete_task", "search_notes", "create_note",
+      "get_note", "get_property_info", "list_property_documents", "list_maintenance_tasks", "get_key_dates",
+      "get_mortgage_summary", "list_goals", "get_goal_progress",
+    ];
+    expect(tools.map((t) => t.name).sort()).toEqual([...expected].sort());
+    for (const t of tools) expect(t.annotations?.readOnlyHint, t.name).toBeTypeOf("boolean");
+  });
+
+  it("« Combien avons-nous dépensé en épicerie ce mois-ci ? »", async () => {
+    const { data } = await call(client, "get_spending_summary", { category: "epicerie" });
+    expect((data.period as { totalCents: number }).totalCents).toBe(10000);
+  });
+
+  it("« Ajoute des rideaux à 150 $ dans la liste Meubles » then « Qu'est-ce qu'on doit acheter pour le salon ? »", async () => {
+    const add = await call(client, "add_shopping_item", { list: "Meubles", name: "Rideaux", unit_price: "150", idempotency_key: "rideaux-0000001" });
+    expect(add.isError).toBe(false);
+    await call(client, "add_shopping_item", { list: "Meubles", name: "Rideaux", unit_price: "150", idempotency_key: "rideaux-0000001" });
+    const { data } = await call(client, "get_shopping_list", { list: "meubles" });
+    const items = data.items as { name: string; unitPriceCents: number }[];
+    expect(items).toEqual([expect.objectContaining({ name: "Rideaux", unitPriceCents: 15000 })]);
+  });
+
+  it("« Quelles sont nos tâches cette semaine ? »", async () => {
+    await call(client, "create_task", { title: "Rappeler le gestionnaire", due_on: today, assignee: "Camille" });
+    const { data } = await call(client, "list_tasks", { scope: "week" });
+    expect((data.tasks as { title: string }[]).map((t) => t.title)).toEqual(["Rappeler le gestionnaire"]);
+  });
+
+  it("« Compare octobre et novembre »", async () => {
+    const { data } = await call(client, "get_spending_summary", { month, compare_month: prev });
+    const cmp = data.comparison as { totalCents: number; deltaCents: number };
+    expect(cmp.totalCents).toBe(4000);
+    expect(cmp.deltaCents).toBe(6000);
+  });
+
+  it("« C'est quand le renouvellement de l'hypothèque ? »", async () => {
+    const none = await call(client, "get_mortgage_summary");
+    expect(JSON.stringify(none.data)).toContain("hypothèque");
+    await run(c.a, (await import("@/server/usecases/condo")).upsertMortgage, {
+      lender: "Desjardins", originalPrincipal: "400000", rate: "4,79", rateType: "fixed", startDate: "2026-10-30",
+      renewalDate: "2031-10-30", amortizationYears: 25, paymentFrequency: "monthly", prepaymentPrivilegePct: 15,
+    });
+    const { data, isError } = await call(client, "get_mortgage_summary");
+    expect(isError).toBe(false);
+    expect(JSON.stringify(data)).toContain("2031-10-30");
+  });
+
+  it("the dashboard answers in one call", async () => {
+    const { data, isError } = await call(client, "get_household_dashboard");
+    expect(isError).toBe(false);
+    expect(data.balance).toBeTruthy();
+    expect((data.month_budget as { spentCents: number }).spentCents).toBe(10000);
+  });
+});

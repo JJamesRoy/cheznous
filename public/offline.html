@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="fr-CA">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#fcfcfc" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0a0a0a" media="(prefers-color-scheme: dark)">
+<title>Hors ligne · Chez Nous</title>
+<style>
+  :root { --bg:#fcfcfc; --fg:#171717; --muted:#565656; --border:rgb(0 0 0 / .08); --accent:#1f6f4a; --accent-fg:#fff; color-scheme: light dark; }
+  @media (prefers-color-scheme: dark) { :root { --bg:#0a0a0a; --fg:#ededed; --muted:#a3a3a3; --border:rgb(255 255 255 / .08); --accent:#3fa274; --accent-fg:#06150e; } }
+  html,body { margin:0; height:100%; background:var(--bg); color:var(--fg); font: 14px/1.5 ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif; -webkit-font-smoothing: antialiased; }
+  main { min-height:100dvh; display:grid; place-items:center; padding:24px; padding-bottom:calc(24px + env(safe-area-inset-bottom)); }
+  .box { max-width: 320px; text-align:left; }
+  h1 { font-size:20px; letter-spacing:-0.02em; font-weight:600; margin:0 0 8px; }
+  p { color:var(--muted); margin:0 0 20px; }
+  button { appearance:none; border:0; border-radius:6px; background:var(--accent); color:var(--accent-fg); font:inherit; font-weight:500; height:44px; padding:0 16px; cursor:pointer; transition: transform 150ms cubic-bezier(0.23,1,0.32,1); }
+  button:active { transform: scale(.97); }
+</style>
+</head>
+<body>
+<main><div class="box">
+  <h1>Tu es hors ligne</h1>
+  <p>Cette page n'a pas encore été ouverte sur cet appareil. Les pages déjà consultées (accueil, listes, balances) restent lisibles, et les dépenses ou articles ajoutés hors ligne seront synchronisés au retour du réseau.</p>
+  <button onclick="location.reload()">Réessayer</button>
+</div></main>
+</body>
+</html>
