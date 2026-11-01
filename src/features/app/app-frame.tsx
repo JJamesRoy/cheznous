@@ -12,6 +12,7 @@ import { QuickAddProvider, useQuickAdd } from "./quick-add";
 import { SessionProvider, type HouseholdSession } from "./session";
 import { QuickAddSheets } from "./quick-add-sheets";
 import { OfflineBanner } from "./offline-banner";
+import { PeopleProvider } from "@/lib/ui/people";
 
 /**
  * Everything inside the signed-in app: session boot, realtime, recurring materialization,
@@ -33,7 +34,9 @@ export function AppFrame({ children }: { children: ReactNode }) {
   return (
     <SessionProvider value={session.data as HouseholdSession}>
       <QuickAddProvider>
-        <SignedIn session={session.data as HouseholdSession}>{children}</SignedIn>
+        <PeopleProvider memberIds={session.data.household.members.map((m) => m.userId)}>
+          <SignedIn session={session.data as HouseholdSession}>{children}</SignedIn>
+        </PeopleProvider>
       </QuickAddProvider>
     </SessionProvider>
   );

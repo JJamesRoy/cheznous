@@ -2,6 +2,7 @@
 
 import { Avatar as AvatarPrimitive } from "radix-ui";
 import { cn } from "@/lib/ui/cn";
+import { personTone } from "@/lib/ui/people";
 
 export type AvatarSize = "sm" | "md" | "lg";
 
@@ -35,10 +36,12 @@ export type AvatarProps = {
   className?: string;
   /** Decorative when the name is already shown next to it. */
   decorative?: boolean;
+  /** Person hue (see src/lib/ui/people.tsx). Defaults to a neutral tone. */
+  tone?: "a" | "b" | "joint" | "neutral";
 };
 
 /** Round avatar: photo, or initials on a neutral tone. */
-export function Avatar({ name, src, size = "md", className, decorative = false }: AvatarProps) {
+export function Avatar({ name, src, size = "md", className, decorative = false, tone }: AvatarProps) {
   return (
     <AvatarPrimitive.Root
       className={cn(
@@ -56,8 +59,8 @@ export function Avatar({ name, src, size = "md", className, decorative = false }
       <AvatarPrimitive.Fallback
         delayMs={src ? 300 : 0}
         className={cn(
-          "flex size-full items-center justify-center font-medium tracking-wide",
-          toneFor(name),
+          "flex size-full items-center justify-center font-semibold",
+          tone ? personTone(tone).chip : toneFor(name),
         )}
       >
         {initials(name, size === "sm" ? 1 : 2)}
@@ -72,7 +75,7 @@ export function AvatarStack({
   size = "sm",
   className,
 }: {
-  people: { name: string; avatarUrl?: string | null }[];
+  people: { name: string; avatarUrl?: string | null; tone?: "a" | "b" | "joint" | "neutral" }[];
   size?: AvatarSize;
   className?: string;
 }) {
@@ -84,6 +87,7 @@ export function AvatarStack({
           name={person.name}
           src={person.avatarUrl}
           size={size}
+          tone={person.tone}
           className="ring-2 ring-bg"
         />
       ))}

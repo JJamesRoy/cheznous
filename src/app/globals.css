@@ -7,79 +7,122 @@
  * forced light (`data-theme=light`), or explicitly with `data-theme=dark`.
  */
 
-/* ───────────────────────── Light (default) ───────────────────────── */
+/* ───────────────────────── Light (default) ─────────────────────────
+ * Ground: Montréal greystone (calcaire gris), cool and low-chroma — not off-white, not cream.
+ * White cards sit on it without borders. Ink is near-black; the single hue is the iron green of
+ * Montréal's outdoor staircases, used on data. Each partner has a stable person hue. */
 :root,
 :root[data-theme="light"] {
   color-scheme: light;
 
-  --gray-1: #fcfcfc;
-  --gray-2: #f8f8f8;
-  --gray-3: #f1f1f1;
-  --gray-4: #ebebeb;
-  --gray-5: #e3e3e3;
-  --gray-6: #d9d9d9;
-  --gray-7: #cecece;
-  --gray-8: #bbbbbb;
-  --gray-9: #8d8d8d;
-  --gray-10: #6f6f6f;
-  --gray-11: #565656;
-  --gray-12: #171717;
+  --gray-1: #f1f2ef;
+  --gray-2: #f1f2ef;
+  --gray-3: #f6f7f5;
+  --gray-4: #eceeea;
+  --gray-5: #e4e6e2;
+  --gray-6: #d6d9d4;
+  --gray-7: #c4c8c2;
+  --gray-8: #a9ada7;
+  --gray-9: #6e726d;
+  --gray-10: #646864;
+  --gray-11: #535753;
+  --gray-12: #151715;
 
   --bg: var(--gray-1);
   --bg-subtle: var(--gray-2);
   --surface: #ffffff;
   --surface-2: var(--gray-3);
+  --active: #e7e9e5;
   --fg: var(--gray-12);
   --fg-muted: var(--gray-11);
   --fg-subtle: var(--gray-10);
 
-  --border: rgb(0 0 0 / 0.08);
-  --border-strong: rgb(0 0 0 / 0.14);
+  --border: #e3e5e1;
+  --border-strong: #cfd3cd;
+  --rule: #eef0ec;
+
+  --primary: #161816;
+  --primary-fg: #ffffff;
+  --primary-hover: #2b2e2b;
 
   --accent: #1f6f4a;
   --accent-fg: #ffffff;
-  --accent-soft: rgb(31 111 74 / 0.08);
+  --accent-soft: #e3efe8;
+  --accent-ink: #0e3b26;
 
-  --positive: #2f7d5b;
-  --negative: #b5473a;
-  --warning: #a86b12;
+  --positive: var(--accent);
+  --negative: #b3261e;
+  --negative-soft: #fbe9e7;
+  --warning: #8a5600;
+  --warning-soft: #fbf1df;
 
-  --overlay: rgb(0 0 0 / 0.32);
-  --shadow-float-value: 0 12px 32px -8px rgb(0 0 0 / 0.14), 0 2px 6px -2px rgb(0 0 0 / 0.06);
+  /* People: first member river blue, second ochre, joint account iron green. */
+  --person-a: #2f6cb0;
+  --person-a-tint: #e4eef9;
+  --person-a-ink: #1b4a7f;
+  --person-b: #b07812;
+  --person-b-tint: #f8eed9;
+  --person-b-ink: #6b4704;
+  --person-joint: var(--accent);
+  --person-joint-tint: var(--accent-soft);
+  --person-joint-ink: var(--accent-ink);
+
+  --overlay: rgb(10 12 10 / 0.36);
+  --shadow-float-value: 0 18px 40px -12px rgb(16 20 16 / 0.18), 0 2px 6px -2px rgb(16 20 16 / 0.06);
 }
 
-/* ───────────────────────── Dark (system) ───────────────────────── */
+/* ───────────────────────── Dark (system) ─────────────────────────
+ * True neutral darks (no navy/slate); elevation by lightness; colour only on data. */
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
     color-scheme: dark;
 
-    --gray-1: #0a0a0a;
-    --gray-2: #111111;
-    --gray-3: #181818;
-    --gray-4: #1f1f1f;
-    --gray-5: #262626;
-    --gray-6: #2e2e2e;
-    --gray-7: #3a3a3a;
-    --gray-8: #4a4a4a;
-    --gray-9: #6e6e6e;
-    --gray-10: #808080;
-    --gray-11: #a3a3a3;
-    --gray-12: #ededed;
+    --gray-1: #0b0b0b;
+    --gray-2: #0b0b0b;
+    --gray-3: #1c1c1c;
+    --gray-4: #222222;
+    --gray-5: #2a2a2a;
+    --gray-6: #333333;
+    --gray-7: #3f3f3f;
+    --gray-8: #555555;
+    --gray-9: #8a8a8a;
+    --gray-10: #949494;
+    --gray-11: #b4b4b4;
+    --gray-12: #f2f2f2;
 
-    --surface: #121212;
-    --border: rgb(255 255 255 / 0.08);
-    --border-strong: rgb(255 255 255 / 0.14);
+    --surface: #151515;
+    --active: #242424;
+    --border: #262626;
+    --border-strong: #3a3a3a;
+    --rule: #1f1f1f;
 
-    --accent: #3fa274;
+    --primary: #f2f2f2;
+    --primary-fg: #0b0b0b;
+    --primary-hover: #dcdcdc;
+
+    --accent: #52b586;
     --accent-fg: #06150e;
-    --accent-soft: rgb(63 162 116 / 0.14);
+    --accent-soft: #13261c;
+    --accent-ink: #86d6ae;
 
-    --positive: #55b386;
-    --negative: #e0796b;
-    --warning: #d9a144;
+    --positive: var(--accent);
+    --negative: #ef7d70;
+    --negative-soft: #2c1714;
+    --warning: #e2ab4f;
+    --warning-soft: #2a2010;
 
-    --overlay: rgb(0 0 0 / 0.6);
-    --shadow-float-value: 0 16px 40px -8px rgb(0 0 0 / 0.6), 0 2px 8px -2px rgb(0 0 0 / 0.4);
+    --person-a: #64a0e3;
+    --person-a-tint: #15212f;
+    --person-a-ink: #9cc4f1;
+    --person-b: #cf9d3f;
+    --person-b-tint: #282011;
+    --person-b-ink: #e8c584;
+    --person-joint: var(--accent);
+    --person-joint-tint: var(--accent-soft);
+    --person-joint-ink: var(--accent-ink);
+
+    --overlay: rgb(0 0 0 / 0.62);
+    --shadow-float-value: 0 18px 44px -10px rgb(0 0 0 / 0.7), 0 2px 8px -2px rgb(0 0 0 / 0.5);
   }
 }
 
@@ -87,40 +130,61 @@
 :root[data-theme="dark"] {
   color-scheme: dark;
 
-  --gray-1: #0a0a0a;
-  --gray-2: #111111;
-  --gray-3: #181818;
-  --gray-4: #1f1f1f;
-  --gray-5: #262626;
-  --gray-6: #2e2e2e;
-  --gray-7: #3a3a3a;
-  --gray-8: #4a4a4a;
-  --gray-9: #6e6e6e;
-  --gray-10: #808080;
-  --gray-11: #a3a3a3;
-  --gray-12: #ededed;
+  --gray-1: #0b0b0b;
+  --gray-2: #0b0b0b;
+  --gray-3: #1c1c1c;
+  --gray-4: #222222;
+  --gray-5: #2a2a2a;
+  --gray-6: #333333;
+  --gray-7: #3f3f3f;
+  --gray-8: #555555;
+  --gray-9: #8a8a8a;
+  --gray-10: #949494;
+  --gray-11: #b4b4b4;
+  --gray-12: #f2f2f2;
 
-  --surface: #121212;
-  --border: rgb(255 255 255 / 0.08);
-  --border-strong: rgb(255 255 255 / 0.14);
+  --surface: #151515;
+  --active: #242424;
+  --border: #262626;
+  --border-strong: #3a3a3a;
+  --rule: #1f1f1f;
 
-  --accent: #3fa274;
+  --primary: #f2f2f2;
+  --primary-fg: #0b0b0b;
+  --primary-hover: #dcdcdc;
+
+  --accent: #52b586;
   --accent-fg: #06150e;
-  --accent-soft: rgb(63 162 116 / 0.14);
+  --accent-soft: #13261c;
+  --accent-ink: #86d6ae;
 
-  --positive: #55b386;
-  --negative: #e0796b;
-  --warning: #d9a144;
+  --positive: var(--accent);
+  --negative: #ef7d70;
+  --negative-soft: #2c1714;
+  --warning: #e2ab4f;
+  --warning-soft: #2a2010;
 
-  --overlay: rgb(0 0 0 / 0.6);
-  --shadow-float-value: 0 16px 40px -8px rgb(0 0 0 / 0.6), 0 2px 8px -2px rgb(0 0 0 / 0.4);
+  --person-a: #64a0e3;
+  --person-a-tint: #15212f;
+  --person-a-ink: #9cc4f1;
+  --person-b: #cf9d3f;
+  --person-b-tint: #282011;
+  --person-b-ink: #e8c584;
+  --person-joint: var(--accent);
+  --person-joint-tint: var(--accent-soft);
+  --person-joint-ink: var(--accent-ink);
+
+  --overlay: rgb(0 0 0 / 0.62);
+  --shadow-float-value: 0 18px 44px -10px rgb(0 0 0 / 0.7), 0 2px 8px -2px rgb(0 0 0 / 0.5);
 }
 
 /* ───────────────────────── Non-color tokens ───────────────────────── */
 :root {
-  --radius-control: 6px;
-  --radius-card: 12px;
-  --radius-sheet: 20px;
+  /* Soft, bimodal radii: cards 20, nested 12, controls 10, floating sheets 28. */
+  --radius-control: 10px;
+  --radius-inner: 12px;
+  --radius-card: 20px;
+  --radius-sheet: 28px;
 
   --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
   --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
@@ -132,7 +196,8 @@
   --dur-standard-exit: 155ms;
   --dur-large-exit: 225ms;
 
-  --display-size: 44px;
+  /* The one answer figure per screen. App figures never reach 48px. */
+  --display-size: 34px;
 
   /* Heights of fixed chrome, used for offsets (toasts, sticky headers). */
   --tabbar-h: 56px;
@@ -142,7 +207,7 @@
 
 @media (width >= 48rem) {
   :root {
-    --display-size: 52px;
+    --display-size: 40px;
     --toast-bottom: 24px;
   }
 }
@@ -194,6 +259,23 @@
   --color-placeholder: var(--gray-9);
   --color-border: var(--border);
   --color-border-strong: var(--border-strong);
+  --color-rule: var(--rule);
+  --color-active: var(--active);
+  --color-primary: var(--primary);
+  --color-primary-fg: var(--primary-fg);
+  --color-primary-hover: var(--primary-hover);
+  --color-accent-ink: var(--accent-ink);
+  --color-negative-soft: var(--negative-soft);
+  --color-warning-soft: var(--warning-soft);
+  --color-person-a: var(--person-a);
+  --color-person-a-tint: var(--person-a-tint);
+  --color-person-a-ink: var(--person-a-ink);
+  --color-person-b: var(--person-b);
+  --color-person-b-tint: var(--person-b-tint);
+  --color-person-b-ink: var(--person-b-ink);
+  --color-person-joint: var(--person-joint);
+  --color-person-joint-tint: var(--person-joint-tint);
+  --color-person-joint-ink: var(--person-joint-ink);
   --color-accent: var(--accent);
   --color-accent-fg: var(--accent-fg);
   --color-accent-soft: var(--accent-soft);
@@ -203,12 +285,13 @@
   --color-overlay: var(--overlay);
 
   --radius-control: var(--radius-control);
+  --radius-inner: var(--radius-inner);
   --radius-card: var(--radius-card);
   --radius-sheet: var(--radius-sheet);
 
   --shadow-float: var(--shadow-float-value);
 
-  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Manrope Variable", "Manrope", ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-geist-mono), ui-monospace, "SFMono-Regular", monospace;
 
   --text-xs: 12px;
@@ -225,12 +308,15 @@
   --text-xl: 28px;
   --text-xl--line-height: 34px;
   --text-xl--letter-spacing: -0.02em;
-  --text-2xl: 40px;
-  --text-2xl--line-height: 44px;
+  --text-2xl: 34px;
+  --text-2xl--line-height: 40px;
   --text-2xl--letter-spacing: -0.02em;
   --text-display: var(--display-size);
   --text-display--line-height: 1.05;
-  --text-display--letter-spacing: -0.03em;
+  --text-display--letter-spacing: -0.025em;
+  --text-hero: var(--display-size);
+  --text-hero--line-height: 1.1;
+  --text-hero--letter-spacing: -0.025em;
 
   --ease-snappy: var(--ease-out);
   --ease-io: var(--ease-in-out);
@@ -260,7 +346,8 @@
     font-family: var(--font-sans);
     font-size: 14px;
     line-height: 20px;
-    font-weight: 400;
+    /* Manrope reads thin at 400 on screens: a variable 450 for body, 650 for headings. */
+    font-weight: 450;
     overscroll-behavior-y: none;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -291,7 +378,7 @@
   h4,
   b,
   strong {
-    font-weight: 600;
+    font-weight: 650;
   }
 
   /* Native date input: align with our text inputs. */

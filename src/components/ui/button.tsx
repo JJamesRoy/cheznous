@@ -15,7 +15,7 @@ const base =
 
 const variants: Record<ButtonVariant, string> = {
   primary:
-    "bg-accent text-accent-fg hover:bg-[color-mix(in_srgb,var(--accent)_90%,var(--fg))] disabled:bg-surface-2",
+    "bg-primary text-primary-fg hover:bg-primary-hover disabled:bg-surface-2",
   secondary:
     "bg-surface text-fg border border-border-strong hover:bg-surface-2 active:bg-surface-pressed disabled:bg-surface",
   ghost: "text-fg hover:bg-surface-2 active:bg-surface-pressed",

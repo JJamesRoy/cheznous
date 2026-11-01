@@ -59,13 +59,13 @@ export function Sidebar({ user, householdName, onQuickAdd, onOpenCommandMenu }: 
             type="button"
             onClick={onQuickAdd}
             aria-label="Nouvelle dépense"
-            className="pressable flex h-8 items-center gap-2 rounded-control bg-accent px-2 text-base font-medium text-accent-fg hover:bg-[color-mix(in_srgb,var(--accent)_90%,var(--fg))]"
+            className="pressable flex h-8 items-center gap-2 rounded-control bg-primary px-2 text-base font-medium text-primary-fg hover:bg-primary-hover"
           >
             <Plus className="size-4 shrink-0" aria-hidden />
             <span data-sidebar-label="" className="flex-1 truncate text-left">
               Nouvelle dépense
             </span>
-            <Kbd data-sidebar-label="" tone="inverted" className="bg-accent-fg/15 text-accent-fg">
+            <Kbd data-sidebar-label="" tone="inverted" className="bg-primary-fg/15 text-primary-fg">
               N
             </Kbd>
           </button>
@@ -105,7 +105,7 @@ export function Sidebar({ user, householdName, onQuickAdd, onOpenCommandMenu }: 
                     className={cn(
                       "flex h-8 items-center gap-2.5 rounded-control px-2 text-base",
                       active
-                        ? "bg-accent-soft font-medium text-accent"
+                        ? "bg-active font-semibold text-fg"
                         : "text-fg-muted hover:bg-surface-2 hover:text-fg",
                     )}
                   >

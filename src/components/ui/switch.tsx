@@ -32,7 +32,7 @@ export const Switch = forwardRef<HTMLButtonElement, SwitchProps>(function Switch
     >
       <span
         aria-hidden
-        className="absolute inset-0 rounded-full bg-accent opacity-0 transition-opacity duration-150 group-data-[state=checked]/sw:opacity-100"
+        className="absolute inset-0 rounded-full bg-primary opacity-0 transition-opacity duration-150 group-data-[state=checked]/sw:opacity-100"
       />
       <SwitchPrimitive.Thumb
         className={cn(

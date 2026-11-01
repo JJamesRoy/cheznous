@@ -1,10 +1,10 @@
 import type { Metadata, Viewport } from "next";
 import { GeistMono } from "geist/font/mono";
-import { GeistSans } from "geist/font/sans";
 import { BOOT_SCRIPT, THEME_COLORS } from "@/lib/ui/boot-script";
 import { Providers } from "./providers";
 import { QueryProvider } from "@/lib/data/query";
 import { ServiceWorker } from "@/features/app/service-worker";
+import "@fontsource-variable/manrope";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -46,7 +46,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html
       lang="fr-CA"
-      className={`${GeistSans.variable} ${GeistMono.variable}`}
+      className={GeistMono.variable}
       suppressHydrationWarning
     >
       <head>

@@ -113,3 +113,13 @@ one hand. Revisit with real usage data.
 For a `mortgage_prepayment` goal the target defaults to the current privilege year's **full**
 allowance and "saved" is the prepayments made in that year, so "remaining" equals the privilege still
 available (using the remaining privilege as the target would subtract prepayments twice).
+
+## D17 — Art direction, revision 2 (after review)
+The first visual pass was judged too generic ("slop/basic"). We adopted the app-screen research of
+taste-skill (`references/app-screens.md`, read as data; its scripts were not executed here): the
+*pastel consumer* style for money homes with a face taken from the product's world — Montréal
+greystone ground, Manrope figures, ink primaries, the green on data only, per-partner hues, and a
+signature "three lanes" element (Moi · Commun · partenaire). This deliberately departs from the
+brief's "display size 48–56 for the hero number": the research's study of real product screens puts
+app figures at 16–40px (a 50px+ figure made a budgeting screen read as a landing page), so the
+answer figure is 34/40px. Details in `docs/DESIGN.md` (revision 2 header).

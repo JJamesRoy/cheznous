@@ -19,7 +19,7 @@ export function ListGroup({
     <Element
       aria-label={ariaLabel}
       className={cn(
-        "cn-list overflow-hidden rounded-card border border-border bg-surface",
+        "cn-list overflow-hidden rounded-card bg-surface",
         className,
       )}
     >

@@ -1,36 +1,58 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Chez Nous
 
-## Getting Started
+Shared home & money app for a couple who just bought a condo in Montréal: Splitwise-style expense
+sharing with proportional splits, budget (by month or by biweekly pay period), shopping lists, tasks,
+notes, condo management (Québec divided co-ownership: syndicate, mortgage with semi-annual
+compounding and prepayment privilege, welcome tax, documents) — and a real remote **MCP server** so
+the couple can use it from Claude.
 
-First, run the development server:
+Québec French UI, CAD, America/Toronto. Installable PWA.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+## Stack
+
+Next.js 16 (App Router) · TypeScript strict · Tailwind CSS v4 · Radix · Motion · Vaul · Sonner · cmdk ·
+NumberFlow · TanStack Query · Zod · Supabase (Postgres, Auth + OAuth 2.1 server, Realtime, Storage) ·
+MCP TypeScript SDK (Streamable HTTP) · Vitest + fast-check · Playwright. Exact versions in `package.json`
+and `docs/DECISIONS.md`.
+
+## Layout
+
+```
+src/domain/    pure business rules (money, splits, balances, budgets, recurrence, mortgage) — no framework
+src/server/    use cases (Zod in → typed result out), shared by the app and the MCP server
+src/mcp/       MCP tools: thin adapters over src/server
+src/app/       Next.js routes; /api/ops/[op] (app RPC) and /api/mcp (MCP)
+supabase/      migrations: schema, RLS, RPCs, triggers, storage policies
+tests/unit     domain tests (property-based)          tests/integration  real DB: RLS, use cases, MCP + OAuth
+e2e/           Playwright flows and screenshots
+docs/          DESIGN · ARCHITECTURE · DECISIONS · MCP · DEPLOY · screenshots
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Getting started
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+pnpm install
+pnpm supabase start            # needs Docker
+pnpm supabase db reset
+cp .env.example .env.local     # paste the URL and publishable key printed by `supabase start`
+pnpm dev                       # http://localhost:3000
+pnpm seed:demo                 # optional, local only: two demo accounts (see the script header)
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Full setup (signing keys, OAuth server, production): `docs/DEPLOY.md`.
 
-## Learn More
+## Scripts
 
-To learn more about Next.js, take a look at the following resources:
+| | |
+|---|---|
+| `pnpm dev` / `pnpm dev:local` | dev server (`:local` forces `.env.local` over the shell environment) |
+| `pnpm build` / `pnpm start` | production build |
+| `pnpm typecheck` · `pnpm lint` | |
+| `pnpm test` | unit tests (domain) |
+| `pnpm test:integration` | integration tests against the local Supabase (RLS, use cases, MCP over OAuth) |
+| `pnpm e2e` | Playwright acceptance flows (needs `pnpm build` and local Supabase) |
+| `pnpm seed:demo` · `pnpm seed:reset` | dev-only demo data · wipe local database |
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Status
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+See `PROGRESS.md` for what is verified, how, and what is not.

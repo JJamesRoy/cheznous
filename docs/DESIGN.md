@@ -1,5 +1,29 @@
 # Chez Nous — Design system
 
+> **Revision 2 (art direction).** The first pass (Geist on near-white, white 12px bordered cards,
+> green on buttons and nav) read as a well-applied kit with no identity. Revision 2 follows the
+> app-screen research of [taste-skill](https://github.com/Leonxlnx/taste-skill) (`references/app-screens.md`:
+> colour on data not chrome, KPIs as type not tiles, flat surfaces, bimodal radii, figures under 48px,
+> "give the product a face") with the *pastel consumer* style for money homes, given a Montréal face:
+>
+> - **Ground from the product's world:** Montréal greystone (`#f1f2ef`), cool and low-chroma — not
+>   off-white, not cream. White cards sit on it **without borders** (a tone step is the edge).
+> - **A figure face with character:** Manrope (variable, self-hosted via `@fontsource-variable/manrope`,
+>   real tabular figures), body at a variable 450, headings 650. Geist Mono only for IDs/URLs.
+> - **Ink, not brand, on actions:** primary buttons, the center « + », selected chips are near-black
+>   (inverted in dark). Navigation selection is a neutral tone step.
+> - **One hue, on data:** the iron green of Montréal's outdoor staircases marks the main data element
+>   (the balance owed to you, progress fill, the current period) and doubles as `--positive`.
+> - **People as themselves:** each partner has a stable person hue — first member river blue, second
+>   ochre, the joint account the house green — as a pale tint with the dark ink of the same hue
+>   (`src/lib/ui/people.tsx`). Identity only, never good/bad.
+> - **Signature element:** *les trois colonnes* — Moi · Commun · partenaire — what each fronted this
+>   month on shared expenses against the agreed ratio (dashboard and balances).
+> - **App type is not display type:** the one answer figure is 34px (mobile) / 40px (desktop); titles
+>   24–28px; nothing reaches 48px.
+>
+> Sections below are updated to these values; where an older value survives, revision 2 wins.
+
 Clean, sharp, quiet. Near‑monochrome surfaces, precise type, hairline borders,
 fast purposeful motion. Light and dark are designed separately; neither is an
 inversion of the other.
@@ -39,12 +63,12 @@ Semantic aliases used by components:
 
 | | Light | Dark |
 |---|---|---|
-| `--accent` | `#1f6f4a` | `#3fa274` |
+| `--accent` | `#1f6f4a` | `#52b586` |
 | `--accent-fg` (text on accent) | `#ffffff` | `#06150e` |
 | `--accent-soft` (active bg) | `rgb(31 111 74 / 0.08)` | `rgb(63 162 116 / 0.14)` |
 
-Used only for: the primary action on a screen, the focus ring, active nav
-state, checked states. Changing `--accent` (and its two companions) re‑themes
+Used only on data (the main data element), the focus ring and checked states. Actions use
+`--primary` (near-black ink, inverted in dark). Changing `--accent` (and its two companions) re‑themes
 the whole app.
 
 ### Money semantics (muted)
@@ -66,8 +90,8 @@ Cards never have shadows.
 
 ## 2. Typography
 
-- **Geist Sans** for all UI (loaded from the `geist` npm package, self‑hosted, no network font fetch).
-- **Geist Mono** only for IDs, tokens, and the technical MCP screen.
+- **Manrope** (variable, self-hosted) for all UI and figures.
+- **Geist Mono** only for IDs, URLs and the technical MCP screen.
 - Scale (px): `12 / 13 / 14 / 16 / 20 / 28 / 40`, plus `--text-display: 52px` (mobile 44px)
   for the one hero number per screen. Tailwind tokens: `text-xs` 12, `text-sm` 13,
   `text-base` 14, `text-md` 16, `text-lg` 20, `text-xl` 28, `text-2xl` 40, `text-display`.
@@ -80,9 +104,9 @@ Cards never have shadows.
 ## 3. Shape & space
 
 - 4px grid. Spacing only from Tailwind's scale (multiples of 4px).
-- Radii: `--radius-control: 6px` (buttons, inputs, chips),
-  `--radius-card: 12px` (cards, list groups), `--radius-sheet: 20px` (sheets, dialogs),
-  `9999px` pills/avatars. No other radii.
+- Radii (soft, bimodal): `--radius-control: 10px` (buttons, inputs, chips), `--radius-inner: 12px`
+  (nested blocks inside a card), `--radius-card: 20px` (cards, list groups), `--radius-sheet: 28px`
+  (sheets, dialogs), `9999px` pills/avatars. No other radii; nested radii step down.
 - Touch targets ≥ 44×44px on mobile (rows are 52px, icon buttons 44px).
 - Icons: Lucide, stroke 1.5. 16px in dense UI, 20px in navigation.
 

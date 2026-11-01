@@ -46,7 +46,7 @@ export function TabBar({ onQuickAdd }: { onQuickAdd: () => void }) {
                     haptic("light");
                     onQuickAdd();
                   }}
-                  className="pressable flex size-12 items-center justify-center rounded-full bg-accent text-accent-fg"
+                  className="pressable flex size-12 items-center justify-center rounded-full bg-primary text-primary-fg"
                 >
                   <Plus className="size-6" aria-hidden />
                 </button>
@@ -62,7 +62,7 @@ export function TabBar({ onQuickAdd }: { onQuickAdd: () => void }) {
                 aria-current={active ? "page" : undefined}
                 className={cn(
                   "pressable flex min-h-11 flex-1 flex-col items-center justify-center gap-0.5 rounded-control focus-visible:-outline-offset-2",
-                  active ? "text-accent" : "text-fg-subtle",
+                  active ? "text-fg" : "text-fg-subtle",
                 )}
               >
                 <span className="relative flex h-7 w-14 items-center justify-center">
@@ -71,7 +71,7 @@ export function TabBar({ onQuickAdd }: { onQuickAdd: () => void }) {
                       layoutId="cn-tab-pill"
                       transition={pillTransition}
                       aria-hidden
-                      className="absolute inset-0 rounded-full bg-accent-soft"
+                      className="absolute inset-0 rounded-full bg-active"
                     />
                   ) : null}
                   <Icon className="relative size-5" aria-hidden />

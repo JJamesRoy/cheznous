@@ -11,7 +11,7 @@ const chipBase =
   "disabled:text-fg-disabled [&_svg]:size-4";
 
 const chipOff = "border-border-strong bg-surface text-fg-muted hover:text-fg hover:bg-surface-2";
-const chipOn = "border-accent bg-accent-soft text-accent";
+const chipOn = "border-primary bg-primary text-primary-fg";
 
 export type ChipProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
   /** Toggle state (renders aria-pressed). */
