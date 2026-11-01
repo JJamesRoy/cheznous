@@ -1,4 +1,4 @@
-# Chez Nous
+# Chez Nou
 
 Shared home & money app for a couple who just bought a condo in Montréal: Splitwise-style expense
 sharing with proportional splits, budget (by month or by biweekly pay period), shopping lists, tasks,
