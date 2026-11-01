@@ -12,6 +12,7 @@
     "test:integration": "vitest run --config vitest.integration.config.mts",
     "seed:demo": "tsx --tsconfig tsconfig.json scripts/seed-demo.ts",
     "seed:reset": "supabase db reset",
+    "import:condo": "tsx --tsconfig tsconfig.json scripts/import-condo-splitwise.ts",
     "typecheck": "tsc --noEmit -p tsconfig.json",
     "e2e": "playwright test",
     "dev:local": "node scripts/local-env.mjs next dev",
