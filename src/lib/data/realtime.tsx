@@ -2,7 +2,6 @@
 
 import { useEffect } from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import { getBrowserSupabase } from "@/lib/supabase/browser";
 
 /** Which op caches a change in each table can affect. */
 const TABLE_OPS: Record<string, string[]> = {
@@ -33,31 +32,40 @@ export function useHouseholdRealtime(householdId: string | null | undefined) {
   const qc = useQueryClient();
   useEffect(() => {
     if (!householdId) return;
-    const supabase = getBrowserSupabase();
-    let timer: ReturnType<typeof setTimeout> | null = null;
-    const pending = new Set<string>();
-    const flush = () => {
-      timer = null;
-      const names = [...pending];
-      pending.clear();
-      names.forEach((n) => void qc.invalidateQueries({ queryKey: ["op", n] }));
-    };
-    const channel = supabase.channel(`household:${householdId}`);
-    for (const table of Object.keys(TABLE_OPS)) {
-      const filter = table === "households" ? `id=eq.${householdId}` : `household_id=eq.${householdId}`;
-      channel.on("postgres_changes", { event: "*", schema: "public", table, filter }, () => {
-        TABLE_OPS[table].forEach((n) => pending.add(n));
-        if (!timer) timer = setTimeout(flush, 120);
+    // supabase-js (Realtime) is loaded after first paint: it is not needed to render a screen.
+    let cancelled = false;
+    let cleanup: (() => void) | undefined;
+    void import("@/lib/supabase/browser").then(({ getBrowserSupabase }) => {
+      if (cancelled) return;
+      const supabase = getBrowserSupabase();
+      let timer: ReturnType<typeof setTimeout> | null = null;
+      const pending = new Set<string>();
+      const flush = () => {
+        timer = null;
+        const names = [...pending];
+        pending.clear();
+        names.forEach((n) => void qc.invalidateQueries({ queryKey: ["op", n] }));
+      };
+      const channel = supabase.channel(`household:${householdId}`);
+      for (const table of Object.keys(TABLE_OPS)) {
+        const filter = table === "households" ? `id=eq.${householdId}` : `household_id=eq.${householdId}`;
+        channel.on("postgres_changes", { event: "*", schema: "public", table, filter }, () => {
+          TABLE_OPS[table].forEach((n) => pending.add(n));
+          if (!timer) timer = setTimeout(flush, 120);
+        });
+      }
+      void supabase.auth.getSession().then(({ data }) => {
+        if (data.session) supabase.realtime.setAuth(data.session.access_token);
+        channel.subscribe();
       });
-    }
-    // Splits have household_id too; deletes only carry the PK, which is fine: we just invalidate.
-    void supabase.auth.getSession().then(({ data }) => {
-      if (data.session) supabase.realtime.setAuth(data.session.access_token);
-      channel.subscribe();
+      cleanup = () => {
+        if (timer) clearTimeout(timer);
+        void supabase.removeChannel(channel);
+      };
     });
     return () => {
-      if (timer) clearTimeout(timer);
-      void supabase.removeChannel(channel);
+      cancelled = true;
+      cleanup?.();
     };
   }, [householdId, qc]);
 }

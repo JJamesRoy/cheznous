@@ -66,7 +66,9 @@ describe("budget", () => {
     await run(c.a, household.updateHouseholdSettings, { payAnchors: { [me.userId]: "2026-01-02" } });
     const jan = await run(c.a, budget.payPeriodBudget, { month: "2026-01" });
     expect(jan.configured && jan.threePaydays).toBe(true);
-    expect(jan.configured && jan.periods.length).toBe(3);
+    // 3 paydays in January plus the period carried over from Dec. 19, clipped to Jan. 1.
+    expect(jan.configured && jan.periods.map((p) => p.payday)).toEqual(["2025-12-19", "2026-01-02", "2026-01-16", "2026-01-30"]);
+    expect(jan.configured && jan.periods.reduce((s, p) => s + p.days, 0)).toBe(31);
   });
 });
 

@@ -123,3 +123,15 @@ signature "three lanes" element (Moi · Commun · partenaire). This deliberately
 brief's "display size 48–56 for the hero number": the research's study of real product screens puts
 app figures at 16–40px (a 50px+ figure made a budgeting screen read as a landing page), so the
 answer figure is 34/40px. Details in `docs/DESIGN.md` (revision 2 header).
+
+## D18 — Load later what the first screen doesn't need
+supabase-js (only used for Realtime and uploads in the browser), the four create sheets (forms, Vaul,
+image compression) and the command menu are dynamically imported. The create sheets are preloaded
+while idle right after the first paint: they must open instantly and work offline (adding an expense
+offline failed in E2E when its code had never been fetched). The dashboard's first-load JS went from
+444 KB to 364 KB gzip; still above the ~180 KB budget (PROGRESS.md, limitations).
+
+## D19 — Restored cache is shown, then always refetched
+TanStack's persisted cache gives offline reading, but after a full page load restored data was
+treated as fresh and showed a pre-settlement balance (caught by E2E). On restore we now invalidate
+every op query: the stale copy paints instantly and is replaced as soon as the network answers.

@@ -12,6 +12,11 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Parallel dev/build dirs, generated reports and screenshots.
+    ".next-*/**",
+    "test-results/**",
+    "playwright-report/**",
+    "docs/screenshots/**",
   ]),
 ]);
 

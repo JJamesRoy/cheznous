@@ -34,7 +34,8 @@ const fills: Record<Exclude<ProgressTone, "auto">, string> = {
 export function progressTone(ratio: number): Exclude<ProgressTone, "auto"> {
   if (ratio > 1) return "negative";
   if (ratio >= 0.85) return "warning";
-  return "neutral";
+  // Under budget, the bar is the screen's main data element: the one data hue.
+  return "accent";
 }
 
 /** Track in gray-5; the fill slides in with a transform (no width animation). */

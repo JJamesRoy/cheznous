@@ -461,7 +461,7 @@ function DayGroups({
 
 function ExpenseRow({ e, memberIds, onOpen, showDate, today }: { e: Expense; memberIds: string[]; onOpen: () => void; showDate: boolean; today: string }) {
   const tone = e.payer.kind === "joint" ? "joint" : toneForMember(memberIds, e.payer.userId).key;
-  const payerName = e.payer.kind === "joint" ? "Commun" : e.payer.isMe ? "Toi" : e.payer.name;
+  const payerName = e.payer.kind === "joint" ? "Commun" : e.payer.isMe ? "Moi" : e.payer.name;
   return (
     <button type="button" onClick={onOpen} className="pressable flex w-full items-center gap-3 bg-surface pl-4 text-left hover:bg-surface-2 active:bg-surface-pressed focus-visible:-outline-offset-2">
       <Avatar name={e.payer.kind === "joint" ? "Compte commun" : e.payer.name} size="md" tone={tone} decorative />
@@ -567,7 +567,7 @@ function ExpenseTable({ expenses, sort, onSort, onOpen, today }: { expenses: Exp
                 <td className="px-3">
                   <span className="inline-flex max-w-full items-center gap-2 text-fg-muted">
                     <Avatar name={e.payer.kind === "joint" ? "Compte commun" : e.payer.name} size="sm" tone={tone} decorative />
-                    <span className="truncate">{e.payer.kind === "joint" ? "Commun" : e.payer.isMe ? "Toi" : e.payer.name}</span>
+                    <span className="truncate">{e.payer.kind === "joint" ? "Commun" : e.payer.isMe ? "Moi" : e.payer.name}</span>
                   </span>
                 </td>
                 <td className="num truncate px-3 text-fg-muted">{splitLabel(e, members)}</td>

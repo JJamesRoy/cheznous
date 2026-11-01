@@ -1,0 +1,1318 @@
+[
+  {
+    "screen": "accueil",
+    "width": 375,
+    "theme": "light",
+    "overflowX": false,
+    "smallTargets": [
+      "button \"\" 20×20",
+      "button \"\" 20×20"
+    ],
+    "consoleErrors": []
+  },
+  {
+    "screen": "depenses",
+    "width": 375,
+    "theme": "light",
+    "overflowX": false,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "screen": "balances",
+    "width": 375,
+    "theme": "light",
+    "overflowX": false,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "screen": "budget",
+    "width": 375,
+    "theme": "light",
+    "overflowX": false,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "screen": "listes",
+    "width": 375,
+    "theme": "light",
+    "overflowX": false,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "screen": "taches",
+    "width": 375,
+    "theme": "light",
+    "overflowX": false,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "screen": "notes",
+    "width": 375,
+    "theme": "light",
+    "overflowX": false,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "screen": "condo",
+    "width": 375,
+    "theme": "light",
+    "overflowX": false,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "screen": "condo-hypotheque",
+    "width": 375,
+    "theme": "light",
+    "overflowX": false,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "screen": "condo-syndicat",
+    "width": 375,
+    "theme": "light",
+    "overflowX": false,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "screen": "condo-documents",
+    "width": 375,
+    "theme": "light",
+    "overflowX": false,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "screen": "condo-apport",
+    "width": 375,
+    "theme": "light",
+    "overflowX": false,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "screen": "objectifs",
+    "width": 375,
+    "theme": "light",
+    "overflowX": false,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "screen": "reglages",
+    "width": 375,
+    "theme": "light",
+    "overflowX": false,
+    "smallTargets": [
+      "input \"\" 1×1"
+    ],
+    "consoleErrors": []
+  },
+  {
+    "screen": "plus",
+    "width": 375,
+    "theme": "light",
+    "overflowX": false,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "screen": "listes-epicerie",
+    "width": 375,
+    "theme": "light",
+    "overflowX": false,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "screen": "accueil",
+    "width": 375,
+    "theme": "dark",
+    "overflowX": false,
+    "smallTargets": [
+      "button \"\" 20×20",
+      "button \"\" 20×20"
+    ],
+    "consoleErrors": []
+  },
+  {
+    "screen": "depenses",
+    "width": 375,
+    "theme": "dark",
+    "overflowX": false,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "screen": "balances",
+    "width": 375,
+    "theme": "dark",
+    "overflowX": false,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "screen": "budget",
+    "width": 375,
+    "theme": "dark",
+    "overflowX": false,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "screen": "listes",
+    "width": 375,
+    "theme": "dark",
+    "overflowX": false,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "screen": "taches",
+    "width": 375,
+    "theme": "dark",
+    "overflowX": false,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "screen": "notes",
+    "width": 375,
+    "theme": "dark",
+    "overflowX": false,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "screen": "condo",
+    "width": 375,
+    "theme": "dark",
+    "overflowX": false,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "screen": "condo-hypotheque",
+    "width": 375,
+    "theme": "dark",
+    "overflowX": false,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "screen": "condo-syndicat",
+    "width": 375,
+    "theme": "dark",
+    "overflowX": false,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "screen": "condo-documents",
+    "width": 375,
+    "theme": "dark",
+    "overflowX": false,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "screen": "condo-apport",
+    "width": 375,
+    "theme": "dark",
+    "overflowX": false,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "screen": "objectifs",
+    "width": 375,
+    "theme": "dark",
+    "overflowX": false,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "screen": "reglages",
+    "width": 375,
+    "theme": "dark",
+    "overflowX": false,
+    "smallTargets": [
+      "input \"\" 1×1"
+    ],
+    "consoleErrors": []
+  },
+  {
+    "screen": "plus",
+    "width": 375,
+    "theme": "dark",
+    "overflowX": false,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "screen": "listes-epicerie",
+    "width": 375,
+    "theme": "dark",
+    "overflowX": false,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "screen": "accueil",
+    "width": 430,
+    "theme": "light",
+    "overflowX": false,
+    "smallTargets": [
+      "button \"\" 20×20",
+      "button \"\" 20×20"
+    ],
+    "consoleErrors": []
+  },
+  {
+    "screen": "depenses",
+    "width": 430,
+    "theme": "light",
+    "overflowX": false,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "screen": "balances",
+    "width": 430,
+    "theme": "light",
+    "overflowX": false,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "screen": "budget",
+    "width": 430,
+    "theme": "light",
+    "overflowX": false,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "screen": "listes",
+    "width": 430,
+    "theme": "light",
+    "overflowX": false,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "screen": "taches",
+    "width": 430,
+    "theme": "light",
+    "overflowX": false,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "screen": "notes",
+    "width": 430,
+    "theme": "light",
+    "overflowX": false,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "screen": "condo",
+    "width": 430,
+    "theme": "light",
+    "overflowX": false,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "screen": "condo-hypotheque",
+    "width": 430,
+    "theme": "light",
+    "overflowX": false,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "screen": "condo-syndicat",
+    "width": 430,
+    "theme": "light",
+    "overflowX": false,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "screen": "condo-documents",
+    "width": 430,
+    "theme": "light",
+    "overflowX": false,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "screen": "condo-apport",
+    "width": 430,
+    "theme": "light",
+    "overflowX": false,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "screen": "objectifs",
+    "width": 430,
+    "theme": "light",
+    "overflowX": false,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "screen": "reglages",
+    "width": 430,
+    "theme": "light",
+    "overflowX": false,
+    "smallTargets": [
+      "input \"\" 1×1"
+    ],
+    "consoleErrors": []
+  },
+  {
+    "screen": "plus",
+    "width": 430,
+    "theme": "light",
+    "overflowX": false,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "screen": "listes-epicerie",
+    "width": 430,
+    "theme": "light",
+    "overflowX": false,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "screen": "accueil",
+    "width": 430,
+    "theme": "dark",
+    "overflowX": false,
+    "smallTargets": [
+      "button \"\" 20×20",
+      "button \"\" 20×20"
+    ],
+    "consoleErrors": []
+  },
+  {
+    "screen": "depenses",
+    "width": 430,
+    "theme": "dark",
+    "overflowX": false,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "screen": "balances",
+    "width": 430,
+    "theme": "dark",
+    "overflowX": false,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "screen": "budget",
+    "width": 430,
+    "theme": "dark",
+    "overflowX": false,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "screen": "listes",
+    "width": 430,
+    "theme": "dark",
+    "overflowX": false,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "screen": "taches",
+    "width": 430,
+    "theme": "dark",
+    "overflowX": false,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "screen": "notes",
+    "width": 430,
+    "theme": "dark",
+    "overflowX": false,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "screen": "condo",
+    "width": 430,
+    "theme": "dark",
+    "overflowX": false,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "screen": "condo-hypotheque",
+    "width": 430,
+    "theme": "dark",
+    "overflowX": false,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "screen": "condo-syndicat",
+    "width": 430,
+    "theme": "dark",
+    "overflowX": false,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "screen": "condo-documents",
+    "width": 430,
+    "theme": "dark",
+    "overflowX": false,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "screen": "condo-apport",
+    "width": 430,
+    "theme": "dark",
+    "overflowX": false,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "screen": "objectifs",
+    "width": 430,
+    "theme": "dark",
+    "overflowX": false,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "screen": "reglages",
+    "width": 430,
+    "theme": "dark",
+    "overflowX": false,
+    "smallTargets": [
+      "input \"\" 1×1"
+    ],
+    "consoleErrors": []
+  },
+  {
+    "screen": "plus",
+    "width": 430,
+    "theme": "dark",
+    "overflowX": false,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "screen": "listes-epicerie",
+    "width": 430,
+    "theme": "dark",
+    "overflowX": false,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "screen": "accueil",
+    "width": 768,
+    "theme": "light",
+    "overflowX": false,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "screen": "depenses",
+    "width": 768,
+    "theme": "light",
+    "overflowX": false,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "screen": "balances",
+    "width": 768,
+    "theme": "light",
+    "overflowX": false,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "screen": "budget",
+    "width": 768,
+    "theme": "light",
+    "overflowX": false,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "screen": "listes",
+    "width": 768,
+    "theme": "light",
+    "overflowX": false,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "screen": "taches",
+    "width": 768,
+    "theme": "light",
+    "overflowX": false,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "screen": "notes",
+    "width": 768,
+    "theme": "light",
+    "overflowX": false,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "screen": "condo",
+    "width": 768,
+    "theme": "light",
+    "overflowX": false,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "screen": "condo-hypotheque",
+    "width": 768,
+    "theme": "light",
+    "overflowX": false,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "screen": "condo-syndicat",
+    "width": 768,
+    "theme": "light",
+    "overflowX": false,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "screen": "condo-documents",
+    "width": 768,
+    "theme": "light",
+    "overflowX": false,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "screen": "condo-apport",
+    "width": 768,
+    "theme": "light",
+    "overflowX": false,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "screen": "objectifs",
+    "width": 768,
+    "theme": "light",
+    "overflowX": false,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "screen": "reglages",
+    "width": 768,
+    "theme": "light",
+    "overflowX": false,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "screen": "plus",
+    "width": 768,
+    "theme": "light",
+    "overflowX": false,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "screen": "listes-epicerie",
+    "width": 768,
+    "theme": "light",
+    "overflowX": false,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "screen": "accueil",
+    "width": 768,
+    "theme": "dark",
+    "overflowX": false,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "screen": "depenses",
+    "width": 768,
+    "theme": "dark",
+    "overflowX": false,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "screen": "balances",
+    "width": 768,
+    "theme": "dark",
+    "overflowX": false,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "screen": "budget",
+    "width": 768,
+    "theme": "dark",
+    "overflowX": false,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "screen": "listes",
+    "width": 768,
+    "theme": "dark",
+    "overflowX": false,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "screen": "taches",
+    "width": 768,
+    "theme": "dark",
+    "overflowX": false,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "screen": "notes",
+    "width": 768,
+    "theme": "dark",
+    "overflowX": false,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "screen": "condo",
+    "width": 768,
+    "theme": "dark",
+    "overflowX": false,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "screen": "condo-hypotheque",
+    "width": 768,
+    "theme": "dark",
+    "overflowX": false,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "screen": "condo-syndicat",
+    "width": 768,
+    "theme": "dark",
+    "overflowX": false,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "screen": "condo-documents",
+    "width": 768,
+    "theme": "dark",
+    "overflowX": false,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "screen": "condo-apport",
+    "width": 768,
+    "theme": "dark",
+    "overflowX": false,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "screen": "objectifs",
+    "width": 768,
+    "theme": "dark",
+    "overflowX": false,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "screen": "reglages",
+    "width": 768,
+    "theme": "dark",
+    "overflowX": false,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "screen": "plus",
+    "width": 768,
+    "theme": "dark",
+    "overflowX": false,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "screen": "listes-epicerie",
+    "width": 768,
+    "theme": "dark",
+    "overflowX": false,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "screen": "accueil",
+    "width": 1440,
+    "theme": "light",
+    "overflowX": false,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "screen": "depenses",
+    "width": 1440,
+    "theme": "light",
+    "overflowX": false,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "screen": "balances",
+    "width": 1440,
+    "theme": "light",
+    "overflowX": false,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "screen": "budget",
+    "width": 1440,
+    "theme": "light",
+    "overflowX": false,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "screen": "listes",
+    "width": 1440,
+    "theme": "light",
+    "overflowX": false,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "screen": "taches",
+    "width": 1440,
+    "theme": "light",
+    "overflowX": false,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "screen": "notes",
+    "width": 1440,
+    "theme": "light",
+    "overflowX": false,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "screen": "condo",
+    "width": 1440,
+    "theme": "light",
+    "overflowX": false,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "screen": "condo-hypotheque",
+    "width": 1440,
+    "theme": "light",
+    "overflowX": false,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "screen": "condo-syndicat",
+    "width": 1440,
+    "theme": "light",
+    "overflowX": false,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "screen": "condo-documents",
+    "width": 1440,
+    "theme": "light",
+    "overflowX": false,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "screen": "condo-apport",
+    "width": 1440,
+    "theme": "light",
+    "overflowX": false,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "screen": "objectifs",
+    "width": 1440,
+    "theme": "light",
+    "overflowX": false,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "screen": "reglages",
+    "width": 1440,
+    "theme": "light",
+    "overflowX": false,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "screen": "listes-epicerie",
+    "width": 1440,
+    "theme": "light",
+    "overflowX": false,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "screen": "accueil",
+    "width": 1440,
+    "theme": "dark",
+    "overflowX": false,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "screen": "depenses",
+    "width": 1440,
+    "theme": "dark",
+    "overflowX": false,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "screen": "balances",
+    "width": 1440,
+    "theme": "dark",
+    "overflowX": false,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "screen": "budget",
+    "width": 1440,
+    "theme": "dark",
+    "overflowX": false,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "screen": "listes",
+    "width": 1440,
+    "theme": "dark",
+    "overflowX": false,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "screen": "taches",
+    "width": 1440,
+    "theme": "dark",
+    "overflowX": false,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "screen": "notes",
+    "width": 1440,
+    "theme": "dark",
+    "overflowX": false,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "screen": "condo",
+    "width": 1440,
+    "theme": "dark",
+    "overflowX": false,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "screen": "condo-hypotheque",
+    "width": 1440,
+    "theme": "dark",
+    "overflowX": false,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "screen": "condo-syndicat",
+    "width": 1440,
+    "theme": "dark",
+    "overflowX": false,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "screen": "condo-documents",
+    "width": 1440,
+    "theme": "dark",
+    "overflowX": false,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "screen": "condo-apport",
+    "width": 1440,
+    "theme": "dark",
+    "overflowX": false,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "screen": "objectifs",
+    "width": 1440,
+    "theme": "dark",
+    "overflowX": false,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "screen": "reglages",
+    "width": 1440,
+    "theme": "dark",
+    "overflowX": false,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "screen": "listes-epicerie",
+    "width": 1440,
+    "theme": "dark",
+    "overflowX": false,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "screen": "connexion",
+    "width": 375,
+    "theme": "light",
+    "overflowX": false,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "screen": "inscription",
+    "width": 375,
+    "theme": "light",
+    "overflowX": false,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "screen": "vide-accueil",
+    "width": 375,
+    "theme": "light",
+    "overflowX": false,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "screen": "vide-depenses",
+    "width": 375,
+    "theme": "light",
+    "overflowX": false,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "screen": "vide-budget",
+    "width": 375,
+    "theme": "light",
+    "overflowX": false,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "screen": "vide-taches",
+    "width": 375,
+    "theme": "light",
+    "overflowX": false,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "screen": "vide-notes",
+    "width": 375,
+    "theme": "light",
+    "overflowX": false,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "screen": "vide-objectifs",
+    "width": 375,
+    "theme": "light",
+    "overflowX": false,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "screen": "vide-condo-hypotheque",
+    "width": 375,
+    "theme": "light",
+    "overflowX": false,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "screen": "connexion",
+    "width": 375,
+    "theme": "dark",
+    "overflowX": false,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "screen": "inscription",
+    "width": 375,
+    "theme": "dark",
+    "overflowX": false,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "screen": "vide-accueil",
+    "width": 375,
+    "theme": "dark",
+    "overflowX": false,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "screen": "vide-depenses",
+    "width": 375,
+    "theme": "dark",
+    "overflowX": false,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "screen": "vide-budget",
+    "width": 375,
+    "theme": "dark",
+    "overflowX": false,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "screen": "vide-taches",
+    "width": 375,
+    "theme": "dark",
+    "overflowX": false,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "screen": "vide-notes",
+    "width": 375,
+    "theme": "dark",
+    "overflowX": false,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "screen": "vide-objectifs",
+    "width": 375,
+    "theme": "dark",
+    "overflowX": false,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "screen": "vide-condo-hypotheque",
+    "width": 375,
+    "theme": "dark",
+    "overflowX": false,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "screen": "connexion",
+    "width": 1440,
+    "theme": "light",
+    "overflowX": false,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "screen": "inscription",
+    "width": 1440,
+    "theme": "light",
+    "overflowX": false,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "screen": "vide-accueil",
+    "width": 1440,
+    "theme": "light",
+    "overflowX": false,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "screen": "vide-depenses",
+    "width": 1440,
+    "theme": "light",
+    "overflowX": false,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "screen": "vide-budget",
+    "width": 1440,
+    "theme": "light",
+    "overflowX": false,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "screen": "vide-taches",
+    "width": 1440,
+    "theme": "light",
+    "overflowX": false,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "screen": "vide-notes",
+    "width": 1440,
+    "theme": "light",
+    "overflowX": false,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "screen": "vide-objectifs",
+    "width": 1440,
+    "theme": "light",
+    "overflowX": false,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "screen": "vide-condo-hypotheque",
+    "width": 1440,
+    "theme": "light",
+    "overflowX": false,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "screen": "connexion",
+    "width": 1440,
+    "theme": "dark",
+    "overflowX": false,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "screen": "inscription",
+    "width": 1440,
+    "theme": "dark",
+    "overflowX": false,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "screen": "vide-accueil",
+    "width": 1440,
+    "theme": "dark",
+    "overflowX": false,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "screen": "vide-depenses",
+    "width": 1440,
+    "theme": "dark",
+    "overflowX": false,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "screen": "vide-budget",
+    "width": 1440,
+    "theme": "dark",
+    "overflowX": false,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "screen": "vide-taches",
+    "width": 1440,
+    "theme": "dark",
+    "overflowX": false,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "screen": "vide-notes",
+    "width": 1440,
+    "theme": "dark",
+    "overflowX": false,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "screen": "vide-objectifs",
+    "width": 1440,
+    "theme": "dark",
+    "overflowX": false,
+    "smallTargets": [],
+    "consoleErrors": []
+  },
+  {
+    "screen": "vide-condo-hypotheque",
+    "width": 1440,
+    "theme": "dark",
+    "overflowX": false,
+    "smallTargets": [],
+    "consoleErrors": []
+  }
+]

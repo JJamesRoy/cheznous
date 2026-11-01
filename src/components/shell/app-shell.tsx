@@ -1,17 +1,21 @@
 "use client";
 
 import { Plus } from "lucide-react";
+import dynamic from "next/dynamic";
 import { usePathname } from "next/navigation";
 import { useCallback, useMemo, useState } from "react";
 import { cn } from "@/lib/ui/cn";
-import { CommandMenu, type CommandAction, type CommandSearchResult } from "./command-menu";
+import type { CommandAction, CommandSearchResult } from "./command-menu";
 import { titleForPath } from "./nav";
 import { ShellContext, type ShellContextValue } from "./shell-context";
-import { ShortcutsHelp } from "./shortcuts-help";
 import { Sidebar } from "./sidebar";
 import { TabBar } from "./tab-bar";
 import { TopBar } from "./top-bar";
 import { useGlobalShortcuts } from "./use-global-shortcuts";
+
+// Loaded on first use: cmdk and the help sheet are not needed to paint a screen.
+const CommandMenu = dynamic(() => import("./command-menu").then((m) => m.CommandMenu), { ssr: false });
+const ShortcutsHelp = dynamic(() => import("./shortcuts-help").then((m) => m.ShortcutsHelp), { ssr: false });
 
 export type AppShellProps = {
   user: { name: string; avatarUrl?: string | null };
@@ -47,6 +51,11 @@ export function AppShell({
   const pathname = usePathname();
   const [commandOpen, setCommandOpen] = useState(false);
   const [helpOpen, setHelpOpen] = useState(false);
+  // Keep the lazy menus mounted after first use so their exit animation can play.
+  const [commandUsed, setCommandUsed] = useState(false);
+  const [helpUsed, setHelpUsed] = useState(false);
+  if (commandOpen && !commandUsed) setCommandUsed(true);
+  if (helpOpen && !helpUsed) setHelpUsed(true);
   const [mobileTitle, setMobileTitle] = useState<React.ReactNode | null>(null);
   const [actionsSlot, setActionsSlot] = useState<HTMLElement | null>(null);
 
@@ -113,13 +122,10 @@ export function AppShell({
         </div>
         <TabBar onQuickAdd={onQuickAdd} />
       </div>
-      <CommandMenu
-        open={commandOpen}
-        onOpenChange={setCommandOpen}
-        actions={actions}
-        search={search}
-      />
-      <ShortcutsHelp open={helpOpen} onOpenChange={setHelpOpen} />
+      {commandOpen || commandUsed ? (
+        <CommandMenu open={commandOpen} onOpenChange={setCommandOpen} actions={actions} search={search} />
+      ) : null}
+      {helpOpen || helpUsed ? <ShortcutsHelp open={helpOpen} onOpenChange={setHelpOpen} /> : null}
     </ShellContext.Provider>
   );
 }

@@ -203,10 +203,13 @@ function BudgetBlock({ data }: { data: Dashboard }) {
           </p>
         </div>
         <ProgressBar value={mb.spentCents} max={mb.budgetCents} tone="auto" label={`Budget de ${monthName}`} valueText={`${mb.spent} sur ${mb.budget}`} />
-        <p className={cn("text-sm", projectedOver ? "text-warning" : "text-fg-subtle")}>
-          Fin du mois prévue : <Money cents={mb.projectedCents} />
-          {projectedOver ? " · au-dessus du budget" : ""}
-        </p>
+        {/* A projection from the first days of the month is noise; same rule as the Budget screen. */}
+        {Number(data.today.slice(8, 10)) >= 7 ? (
+          <p className={cn("text-sm", projectedOver ? "text-warning" : "text-fg-subtle")}>
+            Fin du mois prévue : <Money cents={mb.projectedCents} />
+            {projectedOver ? " · au-dessus du budget" : ""}
+          </p>
+        ) : null}
         {mb.watch.length ? (
           <ul className="-mx-4 mt-1 flex flex-col border-t border-border px-4 pt-2 md:-mx-5 md:px-5" aria-label="Catégories à surveiller">
             {mb.watch.map((w) => (

@@ -24,11 +24,12 @@ const variants: Record<ButtonVariant, string> = {
 
 // Mobile sizes keep ≥ 44px targets; desktop tightens from md up.
 const sizes: Record<ButtonSize, string> = {
-  sm: "h-9 px-3 text-sm md:h-8 [&_svg]:size-4",
+  // sm / icon-sm look smaller but keep a 44px touch target with an invisible ::before.
+  sm: "h-9 px-3 text-sm md:h-8 [&_svg]:size-4 before:absolute before:inset-x-0 before:-inset-y-1 before:content-['']",
   md: "h-11 px-4 text-base md:h-9 [&_svg]:size-4",
   lg: "h-12 px-5 text-md [&_svg]:size-5",
   icon: "size-11 md:size-9 [&_svg]:size-5 md:[&_svg]:size-4",
-  "icon-sm": "size-9 md:size-8 [&_svg]:size-4",
+  "icon-sm": "size-9 md:size-8 [&_svg]:size-4 before:absolute before:-inset-1 before:content-['']",
 };
 
 export type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
