@@ -103,15 +103,16 @@ export const resolveGoal = (ctx: HouseholdCtx, ref: string) => resolveNamed(ctx,
 // ---------------------------------------------------------------------------
 
 export async function selectAll<T>(
-  build: (from: number, to: number) => PromiseLike<{ data: T[] | null; error: { code?: string; message?: string } | null }>,
+  build: (from: number, to: number) => PromiseLike<{ data: unknown; error: { code?: string; message?: string } | null }>,
   pageSize = 1000,
 ): Promise<T[]> {
   const out: T[] = [];
   for (let from = 0; ; from += pageSize) {
     const { data, error } = await build(from, from + pageSize - 1);
     if (error) throw fromDbError(error);
-    out.push(...(data ?? []));
-    if (!data || data.length < pageSize) return out;
+    const rows = (data ?? []) as T[];
+    out.push(...rows);
+    if (rows.length < pageSize) return out;
   }
 }
 

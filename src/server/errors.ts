@@ -112,7 +112,8 @@ export function serializeError(e: unknown): SerializedError {
 }
 
 /** Unwrap a supabase-js `{ data, error }` result. */
-export function unwrap<T>(res: { data: T | null; error: PgError | null }, fallback?: string): T {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function unwrap<T = any>(res: { data: unknown; error: PgError | null }, fallback?: string): T {
   if (res.error) throw fromDbError(res.error, fallback);
   return res.data as T;
 }

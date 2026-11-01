@@ -4,6 +4,12 @@ import { execute } from "../server/op";
 import * as household from "../server/usecases/household";
 import * as expenses from "../server/usecases/expenses";
 import * as balances from "../server/usecases/balances";
+import * as budget from "../server/usecases/budget";
+import * as shopping from "../server/usecases/shopping";
+import * as tasks from "../server/usecases/tasks";
+import * as notes from "../server/usecases/notes";
+import * as recurring from "../server/usecases/recurring";
+import { formatMoney } from "../domain/money";
 
 /**
  * MCP tools. Each tool translates snake_case arguments into a server op input and
@@ -15,6 +21,7 @@ const money = z
   .describe('Montant : chaîne décimale en dollars ("85", "85,50", "1 234,56") ou {"cents": 8550}.');
 const memberRef = z.string().max(100).describe('« moi », le prénom du partenaire, ou un identifiant de membre.');
 const payerRef = z.string().max(100).describe('« moi », le prénom du partenaire, ou « commun » pour le compte commun.');
+const month = z.string().regex(/^\d{4}-\d{2}$/).describe("Mois AAAA-MM");
 const date = z.string().regex(/^\d{4}-\d{2}-\d{2}$/).describe("Date AAAA-MM-JJ (heure de Montréal).");
 const idem = z.string().min(8).max(200).describe("Clé d'idempotence : réutilise-la si tu réessaies le même appel.");
 
@@ -72,7 +79,7 @@ export function registerTools(register: Register) {
     annotations: READ,
     run: async (ctx, a) => {
       const r = await execute(expenses.listExpenses, ctx, { ...a, limit: a.limit ?? 50, offset: a.offset ?? 0 });
-      return { ...r, sum: (await import("../domain/money")).formatMoney(r.sumCents) };
+      return { ...r, sum: formatMoney(r.sumCents) };
     },
   });
 
@@ -185,5 +192,283 @@ export function registerTools(register: Register) {
         confirm: a.confirm === true,
         idempotencyKey: a.idempotency_key,
       }),
+  });
+
+  // ------------------------------------------------------------------ dashboard / budget
+  register({
+    name: "get_budget",
+    title: "Budget du mois",
+    description: "Budget d'un mois par catégorie : prévu, dépensé, restant, état (sous / attention / dépassé) et projection de fin de mois. Mois par défaut : le mois courant (Montréal).",
+    input: { month: month.optional() },
+    annotations: READ,
+    run: async (ctx, a) => execute(budget.getBudget, ctx, { month: a.month }),
+  });
+
+  register({
+    name: "list_budgets",
+    title: "Historique des budgets",
+    description: "Totaux mensuels dépensés vs budget pour les derniers mois, globalement ou pour une catégorie.",
+    input: { months: z.number().int().min(2).max(24).optional(), category: z.string().max(100).optional() },
+    annotations: READ,
+    run: async (ctx, a) => execute(budget.budgetHistory, ctx, { months: a.months ?? 6, category: a.category }),
+  });
+
+  register({
+    name: "get_spending_summary",
+    title: "Résumé des dépenses",
+    description:
+      "Dépenses partagées par catégorie sur une période (mois ou dates), avec comparaison optionnelle à une autre période. Ex. « Compare octobre et novembre » : month=2026-11, compare_month=2026-10. « Combien en épicerie ce mois-ci ? » : category=épicerie.",
+    input: {
+      month: month.optional(),
+      from: date.optional(),
+      to: date.optional(),
+      compare_month: month.optional(),
+      compare_from: date.optional(),
+      compare_to: date.optional(),
+      category: z.string().max(100).optional(),
+    },
+    annotations: READ,
+    run: async (ctx, a) =>
+      execute(budget.spendingSummary, ctx, {
+        month: a.month,
+        from: a.from,
+        to: a.to,
+        compareMonth: a.compare_month,
+        compareFrom: a.compare_from,
+        compareTo: a.compare_to,
+        category: a.category,
+      }),
+  });
+
+  register({
+    name: "list_recurring_expenses",
+    title: "Dépenses récurrentes",
+    description: "Dépenses et factures récurrentes (hebdo, aux deux semaines, mensuelle, aux deux mois comme Hydro-Québec, trimestrielle, annuelle, versements à dates fixes) avec leur prochaine échéance.",
+    input: { kind: z.enum(["expense", "bill"]).optional() },
+    annotations: READ,
+    run: async (ctx, a) => execute(recurring.listRecurring, ctx, { kind: a.kind }),
+  });
+
+  register({
+    name: "list_upcoming_bills",
+    title: "Factures à venir",
+    description: "Factures et dépenses récurrentes des N prochains jours (30 par défaut), avec montant et date.",
+    input: { days: z.number().int().min(1).max(365).optional() },
+    annotations: READ,
+    run: async (ctx, a) => execute(recurring.upcomingBills, ctx, { days: a.days ?? 30 }),
+  });
+
+  // ------------------------------------------------------------------ shopping
+  register({
+    name: "list_shopping_lists",
+    title: "Listes d'achats",
+    description: "Toutes les listes (Épicerie, Meubles du condo…) avec le nombre d'articles à acheter et le total estimé.",
+    input: {},
+    annotations: READ,
+    run: async (ctx) => execute(shopping.listShoppingLists, ctx, {}),
+  });
+
+  register({
+    name: "get_shopping_list",
+    title: "Contenu d'une liste",
+    description: "Articles d'une liste (nom accents ignorés, ex. « meubles »), total estimé restant et montant réellement dépensé. « Qu'est-ce qu'on doit acheter pour le salon ? » : cherche dans la liste Meubles.",
+    input: { list: z.string().max(100), include_purchased: z.boolean().optional() },
+    annotations: READ,
+    run: async (ctx, a) => execute(shopping.getShoppingList, ctx, { list: a.list, includePurchased: a.include_purchased ?? false }),
+  });
+
+  register({
+    name: "add_shopping_item",
+    title: "Ajouter un article",
+    description: "Ajoute un article à une liste. Ex. « Ajoute des rideaux à 150 $ dans la liste Meubles » : list=Meubles, name=Rideaux, unit_price=\"150\".",
+    input: {
+      list: z.string().max(100),
+      name: z.string().min(1).max(120),
+      quantity: z.number().positive().max(999).optional(),
+      unit_price: money.optional(),
+      url: z.string().url().optional(),
+      priority: z.union([z.literal(0), z.literal(1), z.literal(2)]).optional().describe("0 normale, 1 haute, 2 urgente"),
+      assignee: memberRef.optional(),
+      notes: z.string().max(1000).optional(),
+      idempotency_key: idem.optional(),
+    },
+    annotations: WRITE,
+    run: async (ctx, a) =>
+      execute(shopping.addShoppingItem, ctx, {
+        list: a.list,
+        name: a.name,
+        quantity: a.quantity,
+        unitPrice: a.unit_price,
+        url: a.url,
+        priority: a.priority,
+        assignee: a.assignee,
+        notes: a.notes,
+        idempotencyKey: a.idempotency_key,
+      }),
+  });
+
+  register({
+    name: "update_shopping_item",
+    title: "Modifier un article",
+    description: "Modifie un article (nom, quantité, prix, priorité, responsable, liste).",
+    input: {
+      item_id: z.string().uuid(),
+      name: z.string().min(1).max(120).optional(),
+      quantity: z.number().positive().max(999).optional(),
+      unit_price: money.nullable().optional(),
+      priority: z.union([z.literal(0), z.literal(1), z.literal(2)]).optional(),
+      assignee: memberRef.nullable().optional(),
+      list: z.string().max(100).optional(),
+      notes: z.string().max(1000).nullable().optional(),
+    },
+    annotations: WRITE,
+    run: async (ctx, a) =>
+      execute(shopping.updateShoppingItem, ctx, {
+        id: a.item_id,
+        name: a.name,
+        quantity: a.quantity,
+        unitPrice: a.unit_price,
+        priority: a.priority,
+        assignee: a.assignee,
+        list: a.list,
+        notes: a.notes,
+      }),
+  });
+
+  register({
+    name: "mark_item_purchased",
+    title: "Marquer comme acheté",
+    description: "Coche un article. Avec create_expense=true (défaut), crée la dépense liée, pré-remplie (quantité × prix, catégorie selon la liste); amount permet de saisir le prix réel.",
+    input: {
+      item_id: z.string().uuid(),
+      create_expense: z.boolean().optional(),
+      amount: money.optional(),
+      payer: payerRef.optional(),
+      split: split.optional(),
+      idempotency_key: idem.optional(),
+    },
+    annotations: WRITE,
+    run: async (ctx, a) =>
+      execute(shopping.purchaseShoppingItem, ctx, {
+        id: a.item_id,
+        createExpense: a.create_expense ?? true,
+        amount: a.amount,
+        payer: a.payer,
+        split: a.split,
+        idempotencyKey: a.idempotency_key,
+      }),
+  });
+
+  // ------------------------------------------------------------------ tasks
+  register({
+    name: "list_tasks",
+    title: "Tâches",
+    description: "Tâches du foyer. scope=week : cette semaine (et celles en retard); open : toutes les ouvertes; done : terminées.",
+    input: { scope: z.enum(["open", "week", "today", "done", "all"]).optional(), assignee: memberRef.optional() },
+    annotations: READ,
+    run: async (ctx, a) => execute(tasks.listTasks, ctx, { scope: a.scope ?? "open", assignee: a.assignee }),
+  });
+
+  register({
+    name: "create_task",
+    title: "Créer une tâche",
+    description: "Crée une tâche avec responsable, échéance, priorité, étiquettes, récurrence et liste de vérification optionnelles.",
+    input: {
+      title: z.string().min(1).max(160),
+      assignee: memberRef.optional(),
+      due_on: date.optional(),
+      priority: z.union([z.literal(0), z.literal(1), z.literal(2)]).optional(),
+      tags: z.array(z.string().max(40)).max(10).optional(),
+      frequency: z.enum(["weekly", "biweekly", "monthly", "bimonthly", "quarterly", "semiannual", "yearly"]).optional(),
+      checklist: z.array(z.string().max(160)).max(50).optional(),
+      notes: z.string().max(4000).optional(),
+      idempotency_key: idem.optional(),
+    },
+    annotations: WRITE,
+    run: async (ctx, a) =>
+      execute(tasks.createTask, ctx, {
+        title: a.title,
+        assignee: a.assignee,
+        dueOn: a.due_on,
+        priority: a.priority,
+        tags: a.tags,
+        frequency: a.frequency,
+        checklist: a.checklist,
+        notes: a.notes,
+        idempotencyKey: a.idempotency_key,
+      }),
+  });
+
+  register({
+    name: "update_task",
+    title: "Modifier une tâche",
+    description: "Modifie titre, responsable, échéance, priorité, étiquettes ou récurrence.",
+    input: {
+      task_id: z.string().uuid(),
+      title: z.string().min(1).max(160).optional(),
+      assignee: memberRef.nullable().optional(),
+      due_on: date.nullable().optional(),
+      priority: z.union([z.literal(0), z.literal(1), z.literal(2)]).optional(),
+      tags: z.array(z.string().max(40)).max(10).optional(),
+      frequency: z.enum(["weekly", "biweekly", "monthly", "bimonthly", "quarterly", "semiannual", "yearly"]).nullable().optional(),
+      notes: z.string().max(4000).nullable().optional(),
+    },
+    annotations: WRITE,
+    run: async (ctx, a) =>
+      execute(tasks.updateTask, ctx, {
+        id: a.task_id,
+        title: a.title,
+        assignee: a.assignee,
+        dueOn: a.due_on,
+        priority: a.priority,
+        tags: a.tags,
+        frequency: a.frequency,
+        notes: a.notes,
+      }),
+  });
+
+  register({
+    name: "complete_task",
+    title: "Terminer une tâche",
+    description: "Marque une tâche comme faite. Une tâche récurrente passe à sa prochaine échéance.",
+    input: { task_id: z.string().uuid(), idempotency_key: idem.optional() },
+    annotations: WRITE,
+    run: async (ctx, a) => execute(tasks.completeTask, ctx, { id: a.task_id, idempotencyKey: a.idempotency_key }),
+  });
+
+  // ------------------------------------------------------------------ notes
+  register({
+    name: "search_notes",
+    title: "Chercher dans les notes",
+    description: "Recherche plein texte en français dans les notes du foyer (et tes notes privées).",
+    input: { query: z.string().min(1).max(200), limit: z.number().int().min(1).max(50).optional() },
+    annotations: READ,
+    run: async (ctx, a) => execute(notes.searchNotes, ctx, { q: a.query, limit: a.limit ?? 10 }),
+  });
+
+  register({
+    name: "get_note",
+    title: "Lire une note",
+    description: "Contenu Markdown complet d'une note et ses pièces jointes.",
+    input: { note_id: z.string().uuid() },
+    annotations: READ,
+    run: async (ctx, a) => execute(notes.getNote, ctx, { id: a.note_id }),
+  });
+
+  register({
+    name: "create_note",
+    title: "Créer une note",
+    description: "Crée une note Markdown (partagée par défaut; private=true pour la garder pour toi).",
+    input: {
+      title: z.string().max(160),
+      body: z.string().max(50000).optional(),
+      tags: z.array(z.string().max(40)).max(12).optional(),
+      pinned: z.boolean().optional(),
+      private: z.boolean().optional(),
+      idempotency_key: idem.optional(),
+    },
+    annotations: WRITE,
+    run: async (ctx, a) =>
+      execute(notes.createNote, ctx, { title: a.title, bodyMd: a.body, tags: a.tags, pinned: a.pinned, isPrivate: a.private, idempotencyKey: a.idempotency_key }),
   });
 }

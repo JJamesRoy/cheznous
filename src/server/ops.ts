@@ -2,12 +2,17 @@ import type { AnyOp } from "./op";
 import * as household from "./usecases/household";
 import * as expenses from "./usecases/expenses";
 import * as balances from "./usecases/balances";
+import * as budget from "./usecases/budget";
+import * as shopping from "./usecases/shopping";
+import * as tasks from "./usecases/tasks";
+import * as notes from "./usecases/notes";
+import * as recurring from "./usecases/recurring";
 
 /**
  * Every operation of the app. The app RPC route (/api/ops/[op]) and the MCP server
  * both dispatch through this registry — there is no other path to business logic.
  */
-const modules = [household, expenses, balances];
+const modules = [household, expenses, balances, budget, shopping, tasks, notes, recurring];
 
 export const ops: Record<string, AnyOp> = Object.fromEntries(
   modules.flatMap((m) =>
