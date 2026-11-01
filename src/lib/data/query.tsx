@@ -54,6 +54,9 @@ export function QueryProvider({ children }: { children: ReactNode }) {
   return (
     <PersistQueryClientProvider
       client={client}
+      // Restored data is shown at once (offline reading), but may be hours old and Realtime events
+      // were missed while the app was closed: always refetch after a restore.
+      onSuccess={() => void client.invalidateQueries({ queryKey: ["op"] })}
       persistOptions={{
         persister,
         maxAge: 7 * 24 * 60 * 60_000,
