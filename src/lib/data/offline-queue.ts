@@ -1,7 +1,7 @@
 "use client";
 
 import { createStore, del, entries, set } from "idb-keyval";
-import { ApiError, callOp, type OpInput, type OpName } from "./api";
+import { ApiError, callOp, type OpInput } from "./api";
 
 /**
  * Offline writes, deliberately limited to adding an expense and adding / checking

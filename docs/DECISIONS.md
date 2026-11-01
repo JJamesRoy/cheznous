@@ -74,3 +74,42 @@ build environment, not the project.
 `next-pwa`/Serwist would add a build plugin with its own versioning surface. Our caching needs
 are small (app shell + static assets; data persistence is handled by TanStack's persister), so
 `public/sw.js` is ~150 lines we fully control.
+
+## D10 — `.env.local` must win over the shell
+This build environment exports another project's Supabase credentials (`NEXT_PUBLIC_SUPABASE_URL`,
+`SUPABASE_SECRET_KEY`, …). Next.js and dotenv give the process environment precedence over `.env*`
+files. So: integration tests inject `.env.local` through Vitest's `test.env`, and refuse any
+non-local URL; `pnpm seed:demo` loads with `override: true` and refuses non-local URLs;
+`pnpm dev:local` / `start:local` / the Playwright web server use `scripts/local-env.mjs`, which loads
+`.env.local` with override before spawning. A normal developer shell is unaffected.
+
+## D11 — Couples only: at most two members, one mortgage
+The schema keeps `household_members` many-to-many (multi-household ready), but `accept_invitation`
+refuses a third member (`HOUSEHOLD_FULL`) and the UI speaks of « ton/ta partenaire ». One mortgage per
+household (unique index) because every screen and MCP answer talks about « l'hypothèque ».
+
+## D12 — `documents` instead of `property_documents`
+One table serves property documents, appliance manuals/invoices and note attachments
+(`note_id`, `appliance_id`). Each row is either a Storage path or an external URL (Google Drive links
+are first-class and detected for display). Privacy of note attachments follows the note (RLS).
+
+## D13 — Lazy materialization of recurring expenses
+No cron is needed for recurring expenses: `recurring.materialize` runs when the app opens and creates
+due occurrences. A unique `(recurring_rule_id, recurring_occurrence)` index plus a deterministic
+idempotency key (`recurring:<rule>:<date>`) make concurrent runs by both partners harmless (tested).
+Rules never back-fill the past when created or edited.
+
+## D14 — Fixed vs variable projection
+Linear end-of-month projection is right for groceries, absurd for the mortgage (one payment on the
+30th). Fixed categories project to `max(spent, budget)`; variable ones extrapolate linearly from the
+days elapsed (household timezone).
+
+## D15 — Tasks stay under « Plus »
+The bottom bar keeps Accueil · Dépenses · + · Listes · Plus. Tasks due this week are on the dashboard
+(block 3), which covers the daily need; promoting Tâches would push Listes, which is used in-store with
+one hand. Revisit with real usage data.
+
+## D16 — Mortgage prepayment goal target
+For a `mortgage_prepayment` goal the target defaults to the current privilege year's **full**
+allowance and "saved" is the prepayments made in that year, so "remaining" equals the privilege still
+available (using the remaining privilege as the target would subtract prepayments twice).

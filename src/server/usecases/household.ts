@@ -297,3 +297,21 @@ export const upsertCategory = defineOp({
     return { id: row.id };
   },
 });
+
+/** Recent MCP tool calls made with my account (Réglages → Claude). */
+export const recentMcpCalls = defineOp({
+  name: "mcp.recentCalls",
+  kind: "read",
+  input: z.object({ limit: z.number().int().min(1).max(100).default(20) }),
+  run: async (ctx, input) => {
+    const rows = unwrap(
+      await ctx.db
+        .from("mcp_tool_calls")
+        .select("id, tool, status, error_code, latency_ms, client_id, at")
+        .eq("user_id", ctx.userId)
+        .order("at", { ascending: false })
+        .limit(input.limit),
+    ) as { id: number; tool: string; status: string; error_code: string | null; latency_ms: number; client_id: string | null; at: string }[];
+    return { calls: rows };
+  },
+});

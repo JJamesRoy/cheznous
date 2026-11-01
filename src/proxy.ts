@@ -2,7 +2,17 @@ import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
 /** Routes reachable without a session. */
-const PUBLIC_PREFIXES = ["/connexion", "/inscription", "/auth", "/rejoindre", "/hors-ligne", "/.well-known", "/api/mcp", "/oauth"];
+const PUBLIC_PREFIXES = [
+  "/connexion",
+  "/inscription",
+  "/mot-de-passe",
+  "/auth",
+  "/rejoindre",
+  "/.well-known",
+  "/api/mcp",
+  "/oauth",
+  ...(process.env.NODE_ENV === "production" ? [] : ["/design"]),
+];
 
 /**
  * Refreshes the Supabase session cookie on every navigation and redirects

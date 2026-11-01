@@ -49,3 +49,4 @@ supabase/signing_keys.json
 /test-results/
 /playwright-report/
 /e2e/.auth/
+/.next-*/

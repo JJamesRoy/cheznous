@@ -1,26 +1,734 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/*
+ * Chez Nous — design tokens (docs/DESIGN.md).
+ * Components never use raw hex values: everything goes through these variables.
+ * Light is the default; dark applies with the OS preference unless the user
+ * forced light (`data-theme=light`), or explicitly with `data-theme=dark`.
+ */
+
+/* ───────────────────────── Light (default) ───────────────────────── */
+:root,
+:root[data-theme="light"] {
+  color-scheme: light;
+
+  --gray-1: #fcfcfc;
+  --gray-2: #f8f8f8;
+  --gray-3: #f1f1f1;
+  --gray-4: #ebebeb;
+  --gray-5: #e3e3e3;
+  --gray-6: #d9d9d9;
+  --gray-7: #cecece;
+  --gray-8: #bbbbbb;
+  --gray-9: #8d8d8d;
+  --gray-10: #6f6f6f;
+  --gray-11: #565656;
+  --gray-12: #171717;
+
+  --bg: var(--gray-1);
+  --bg-subtle: var(--gray-2);
+  --surface: #ffffff;
+  --surface-2: var(--gray-3);
+  --fg: var(--gray-12);
+  --fg-muted: var(--gray-11);
+  --fg-subtle: var(--gray-10);
+
+  --border: rgb(0 0 0 / 0.08);
+  --border-strong: rgb(0 0 0 / 0.14);
+
+  --accent: #1f6f4a;
+  --accent-fg: #ffffff;
+  --accent-soft: rgb(31 111 74 / 0.08);
+
+  --positive: #2f7d5b;
+  --negative: #b5473a;
+  --warning: #a86b12;
+
+  --overlay: rgb(0 0 0 / 0.32);
+  --shadow-float-value: 0 12px 32px -8px rgb(0 0 0 / 0.14), 0 2px 6px -2px rgb(0 0 0 / 0.06);
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
+/* ───────────────────────── Dark (system) ───────────────────────── */
 @media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+
+    --gray-1: #0a0a0a;
+    --gray-2: #111111;
+    --gray-3: #181818;
+    --gray-4: #1f1f1f;
+    --gray-5: #262626;
+    --gray-6: #2e2e2e;
+    --gray-7: #3a3a3a;
+    --gray-8: #4a4a4a;
+    --gray-9: #6e6e6e;
+    --gray-10: #808080;
+    --gray-11: #a3a3a3;
+    --gray-12: #ededed;
+
+    --surface: #121212;
+    --border: rgb(255 255 255 / 0.08);
+    --border-strong: rgb(255 255 255 / 0.14);
+
+    --accent: #3fa274;
+    --accent-fg: #06150e;
+    --accent-soft: rgb(63 162 116 / 0.14);
+
+    --positive: #55b386;
+    --negative: #e0796b;
+    --warning: #d9a144;
+
+    --overlay: rgb(0 0 0 / 0.6);
+    --shadow-float-value: 0 16px 40px -8px rgb(0 0 0 / 0.6), 0 2px 8px -2px rgb(0 0 0 / 0.4);
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* ───────────────────────── Dark (explicit) ───────────────────────── */
+:root[data-theme="dark"] {
+  color-scheme: dark;
+
+  --gray-1: #0a0a0a;
+  --gray-2: #111111;
+  --gray-3: #181818;
+  --gray-4: #1f1f1f;
+  --gray-5: #262626;
+  --gray-6: #2e2e2e;
+  --gray-7: #3a3a3a;
+  --gray-8: #4a4a4a;
+  --gray-9: #6e6e6e;
+  --gray-10: #808080;
+  --gray-11: #a3a3a3;
+  --gray-12: #ededed;
+
+  --surface: #121212;
+  --border: rgb(255 255 255 / 0.08);
+  --border-strong: rgb(255 255 255 / 0.14);
+
+  --accent: #3fa274;
+  --accent-fg: #06150e;
+  --accent-soft: rgb(63 162 116 / 0.14);
+
+  --positive: #55b386;
+  --negative: #e0796b;
+  --warning: #d9a144;
+
+  --overlay: rgb(0 0 0 / 0.6);
+  --shadow-float-value: 0 16px 40px -8px rgb(0 0 0 / 0.6), 0 2px 8px -2px rgb(0 0 0 / 0.4);
+}
+
+/* ───────────────────────── Non-color tokens ───────────────────────── */
+:root {
+  --radius-control: 6px;
+  --radius-card: 12px;
+  --radius-sheet: 20px;
+
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+  --dur-micro: 150ms;
+  --dur-standard: 220ms;
+  --dur-large: 320ms;
+  /* Exits are ~30% faster than enters. */
+  --dur-micro-exit: 105ms;
+  --dur-standard-exit: 155ms;
+  --dur-large-exit: 225ms;
+
+  --display-size: 44px;
+
+  /* Heights of fixed chrome, used for offsets (toasts, sticky headers). */
+  --tabbar-h: 56px;
+  --topbar-h: 56px;
+  --toast-bottom: calc(16px + env(safe-area-inset-bottom));
+}
+
+@media (width >= 48rem) {
+  :root {
+    --display-size: 52px;
+    --toast-bottom: 24px;
+  }
+}
+
+/* ───────────────────────── Tailwind mapping ───────────────────────── */
+@custom-variant dark {
+  &:where([data-theme="dark"], [data-theme="dark"] *) {
+    @slot;
+  }
+  @media (prefers-color-scheme: dark) {
+    &:where(:root:not([data-theme="light"]), :root:not([data-theme="light"]) *) {
+      @slot;
+    }
+  }
+}
+
+@theme inline {
+  /* Only our tokens exist: no default palette, radii, shadows or sizes. */
+  --color-*: initial;
+  --radius-*: initial;
+  --shadow-*: initial;
+  --text-*: initial;
+  --font-*: initial;
+  --ease-*: initial;
+
+  --color-gray-1: var(--gray-1);
+  --color-gray-2: var(--gray-2);
+  --color-gray-3: var(--gray-3);
+  --color-gray-4: var(--gray-4);
+  --color-gray-5: var(--gray-5);
+  --color-gray-6: var(--gray-6);
+  --color-gray-7: var(--gray-7);
+  --color-gray-8: var(--gray-8);
+  --color-gray-9: var(--gray-9);
+  --color-gray-10: var(--gray-10);
+  --color-gray-11: var(--gray-11);
+  --color-gray-12: var(--gray-12);
+
+  --color-bg: var(--bg);
+  --color-bg-subtle: var(--bg-subtle);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-surface-pressed: var(--gray-4);
+  --color-track: var(--gray-5);
+  --color-fg: var(--fg);
+  --color-fg-muted: var(--fg-muted);
+  --color-fg-subtle: var(--fg-subtle);
+  --color-fg-disabled: var(--gray-8);
+  --color-placeholder: var(--gray-9);
+  --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
+  --color-accent: var(--accent);
+  --color-accent-fg: var(--accent-fg);
+  --color-accent-soft: var(--accent-soft);
+  --color-positive: var(--positive);
+  --color-negative: var(--negative);
+  --color-warning: var(--warning);
+  --color-overlay: var(--overlay);
+
+  --radius-control: var(--radius-control);
+  --radius-card: var(--radius-card);
+  --radius-sheet: var(--radius-sheet);
+
+  --shadow-float: var(--shadow-float-value);
+
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, "SFMono-Regular", monospace;
+
+  --text-xs: 12px;
+  --text-xs--line-height: 16px;
+  --text-sm: 13px;
+  --text-sm--line-height: 18px;
+  --text-base: 14px;
+  --text-base--line-height: 20px;
+  --text-md: 16px;
+  --text-md--line-height: 24px;
+  --text-lg: 20px;
+  --text-lg--line-height: 28px;
+  --text-lg--letter-spacing: -0.02em;
+  --text-xl: 28px;
+  --text-xl--line-height: 34px;
+  --text-xl--letter-spacing: -0.02em;
+  --text-2xl: 40px;
+  --text-2xl--line-height: 44px;
+  --text-2xl--letter-spacing: -0.02em;
+  --text-display: var(--display-size);
+  --text-display--line-height: 1.05;
+  --text-display--letter-spacing: -0.03em;
+
+  --ease-snappy: var(--ease-out);
+  --ease-io: var(--ease-in-out);
+  --ease-out: var(--ease-out);
+  --ease-in-out: var(--ease-in-out);
+
+  --default-transition-duration: var(--dur-micro);
+  --default-transition-timing-function: var(--ease-out);
+
+  --animate-skeleton: cn-skeleton 1.6s var(--ease-in-out) infinite;
+  --animate-spin: cn-spin 0.8s linear infinite;
+}
+
+/* ───────────────────────── Base ───────────────────────── */
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+    -webkit-tap-highlight-color: transparent;
+    background-color: var(--bg);
+  }
+
+  body {
+    min-height: 100dvh;
+    background-color: var(--bg);
+    color: var(--fg);
+    font-family: var(--font-sans);
+    font-size: 14px;
+    line-height: 20px;
+    font-weight: 400;
+    overscroll-behavior-y: none;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  ::selection {
+    background-color: var(--accent-soft);
+    color: var(--fg);
+  }
+
+  :focus {
+    outline: none;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+
+  ::placeholder {
+    color: var(--gray-9);
+    opacity: 1;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  b,
+  strong {
+    font-weight: 600;
+  }
+
+  /* Native date input: align with our text inputs. */
+  input[type="date"]::-webkit-date-and-time-value {
+    text-align: start;
+  }
+  input[type="date"]::-webkit-calendar-picker-indicator {
+    opacity: 0.55;
+    cursor: pointer;
+  }
+
+  /* Toasts sit above the mobile tab bar when it is present. */
+  @media (width < 64rem) {
+    body:has([data-cn-tabbar]) {
+      --toast-bottom: calc(var(--tabbar-h) + 12px + env(safe-area-inset-bottom));
+    }
+  }
+}
+
+/* ───────────────────────── State-driven visibility ─────────────────────────
+ * Unlayered on purpose: these must beat display utilities (flex, inline-flex). */
+/* Privacy mode: the boot script sets html[data-privacy=on] before paint. */
+[data-money-mask] {
+  display: none;
+}
+:root[data-privacy="on"] [data-money-value] {
+  display: none;
+}
+:root[data-privacy="on"] [data-money-mask] {
+  display: inline;
+}
+
+/* Privacy toggle icon swaps with the same attribute (no hydration flash). */
+:root[data-privacy="on"] [data-privacy-icon="off"],
+:root:not([data-privacy="on"]) [data-privacy-icon="on"] {
+  display: none;
+}
+
+/* Desktop sidebar width is decided before paint too. */
+:root {
+  --sidebar-w: 240px;
+}
+:root[data-sidebar="collapsed"] {
+  --sidebar-w: 56px;
+}
+:root[data-sidebar="collapsed"] [data-sidebar-label] {
+  display: none;
+}
+:root:not([data-sidebar="collapsed"]) [data-sidebar-collapsed-only] {
+  display: none;
+}
+
+/* ───────────────────────── Utilities ───────────────────────── */
+@utility num {
+  font-variant-numeric: tabular-nums;
+}
+
+@utility pressable {
+  transition-property: transform;
+  transition-duration: var(--dur-micro);
+  transition-timing-function: var(--ease-out);
+  -webkit-user-select: none;
+  user-select: none;
+  &:active:not(:disabled):not([aria-disabled="true"]) {
+    transform: scale(0.97);
+  }
+}
+
+@utility hairline {
+  border: 1px solid var(--border);
+}
+
+@utility hairline-t {
+  border-top: 1px solid var(--border);
+}
+
+@utility hairline-b {
+  border-bottom: 1px solid var(--border);
+}
+
+@utility h-app {
+  height: 100dvh;
+}
+
+@utility min-h-app {
+  min-height: 100dvh;
+}
+
+@utility pt-safe {
+  padding-top: env(safe-area-inset-top);
+}
+
+@utility pb-safe {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+@utility pl-safe {
+  padding-left: env(safe-area-inset-left);
+}
+
+@utility pr-safe {
+  padding-right: env(safe-area-inset-right);
+}
+
+@utility mb-safe {
+  margin-bottom: env(safe-area-inset-bottom);
+}
+
+@utility bottom-safe {
+  bottom: env(safe-area-inset-bottom);
+}
+
+/* Inputs: 16px on mobile (no iOS zoom), 14px from md up. */
+@utility text-input {
+  font-size: 16px;
+  line-height: 24px;
+  @media (width >= 48rem) {
+    font-size: 14px;
+    line-height: 20px;
+  }
+}
+
+/* ───────────────────────── Components ───────────────────────── */
+@layer components {
+  /* Floating layers (menus, popovers, selects): origin-aware enter, faster exit.
+   * Each component sets --cn-origin to its Radix transform-origin variable. */
+  .cn-float {
+    transform-origin: var(--cn-origin, center);
+    animation-duration: var(--dur-standard);
+    animation-timing-function: var(--ease-out);
+    animation-fill-mode: both;
+  }
+  .cn-float[data-state="open"],
+  .cn-float[data-state="delayed-open"],
+  .cn-float[data-state="instant-open"] {
+    animation-name: cn-pop-in;
+  }
+  .cn-float[data-state="closed"] {
+    animation-name: cn-pop-out;
+    animation-duration: var(--dur-standard-exit);
+  }
+  .cn-float[data-side="top"] {
+    --cn-dy: -4px;
+  }
+  .cn-float[data-side="left"],
+  .cn-float[data-side="right"] {
+    --cn-dy: 0px;
+  }
+
+  /* Tooltips: in after the provider delay, out instantly (no exit animation). */
+  .cn-tooltip {
+    transform-origin: var(--radix-tooltip-content-transform-origin);
+    animation: cn-pop-in var(--dur-micro) var(--ease-out) both;
+  }
+  .cn-tooltip[data-side="top"] {
+    --cn-dy: 2px;
+  }
+  .cn-tooltip[data-side="bottom"] {
+    --cn-dy: -2px;
+  }
+  .cn-tooltip[data-side="left"],
+  .cn-tooltip[data-side="right"] {
+    --cn-dy: 0px;
+  }
+
+  /* Centered dialogs. */
+  .cn-dialog {
+    animation-duration: var(--dur-large);
+    animation-timing-function: var(--ease-out);
+    animation-fill-mode: both;
+  }
+  .cn-dialog[data-state="open"] {
+    animation-name: cn-dialog-in;
+  }
+  .cn-dialog[data-state="closed"] {
+    animation-name: cn-dialog-out;
+    animation-duration: var(--dur-large-exit);
+  }
+
+  /* Right side panel (desktop sheets). */
+  .cn-panel {
+    animation-duration: var(--dur-large);
+    animation-timing-function: var(--ease-out);
+    animation-fill-mode: both;
+  }
+  .cn-panel[data-state="open"] {
+    animation-name: cn-panel-in;
+  }
+  .cn-panel[data-state="closed"] {
+    animation-name: cn-panel-out;
+    animation-duration: var(--dur-large-exit);
+  }
+
+  .cn-overlay {
+    animation-duration: var(--dur-large);
+    animation-timing-function: var(--ease-out);
+    animation-fill-mode: both;
+  }
+  .cn-overlay[data-state="open"] {
+    animation-name: cn-fade-in;
+  }
+  .cn-overlay[data-state="closed"] {
+    animation-name: cn-fade-out;
+    animation-duration: var(--dur-large-exit);
+  }
+
+  /* List groups: inset hairline separators between rows. */
+  .cn-list > :not(:first-child) .cn-row-sep::before {
+    content: "";
+    position: absolute;
+    inset-inline: 0;
+    top: 0;
+    border-top: 1px solid var(--border);
+    pointer-events: none;
+  }
+
+  /* Drawn checkmark (stroke-dashoffset, 220ms in, faster out). */
+  .cn-check-path {
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+    transition: stroke-dashoffset var(--dur-micro-exit) var(--ease-out);
+  }
+  [data-state="checked"] .cn-check-path {
+    stroke-dashoffset: 0;
+    transition: stroke-dashoffset var(--dur-standard) var(--ease-out) 40ms;
+  }
+  .cn-check-fill {
+    opacity: 0;
+    transform: scale(0.6);
+    transition-property: opacity, transform;
+    transition-duration: var(--dur-micro-exit);
+    transition-timing-function: var(--ease-out);
+  }
+  [data-state="checked"] > .cn-check-fill {
+    opacity: 1;
+    transform: scale(1);
+    transition-duration: var(--dur-micro);
+  }
+
+  /* cmdk */
+  .cn-command [cmdk-group-heading] {
+    padding: 8px 12px 4px;
+    font-size: 12px;
+    line-height: 16px;
+    font-weight: 500;
+    color: var(--fg-subtle);
+  }
+  .cn-command [cmdk-item][data-selected="true"] {
+    background-color: var(--surface-2);
+  }
+  .cn-command [cmdk-group]:not([hidden]) ~ [cmdk-group]:not([hidden]) {
+    border-top: 1px solid var(--border);
+    margin-top: 4px;
+    padding-top: 4px;
+  }
+}
+
+/* ───────────────────────── Library overrides ─────────────────────────
+ * Vaul and Sonner inject unlayered CSS at runtime, which beats anything in
+ * a cascade layer. These overrides must stay unlayered. */
+
+/* Vaul bottom sheets: 320ms ease-out open, faster close. */
+.cn-drawer[data-vaul-drawer] {
+  animation-duration: var(--dur-large);
+  animation-timing-function: var(--ease-out);
+  transition-duration: var(--dur-large);
+  transition-timing-function: var(--ease-out);
+}
+.cn-drawer[data-vaul-drawer][data-state="closed"] {
+  animation-duration: var(--dur-large-exit);
+}
+.cn-drawer-overlay[data-vaul-overlay] {
+  transition-duration: var(--dur-large);
+  transition-timing-function: var(--ease-out);
+}
+
+/* ───────────────────────── Keyframes ───────────────────────── */
+@keyframes cn-pop-in {
+  from {
+    opacity: 0;
+    transform: translateY(var(--cn-dy, 4px)) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+@keyframes cn-pop-out {
+  from {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(var(--cn-dy, 4px)) scale(0.98);
+  }
+}
+@keyframes cn-dialog-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px) scale(0.98);
+    filter: blur(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0);
+  }
+}
+@keyframes cn-dialog-out {
+  from {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(4px) scale(0.98);
+  }
+}
+@keyframes cn-panel-in {
+  from {
+    opacity: 0;
+    transform: translateX(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+@keyframes cn-panel-out {
+  from {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(24px);
+  }
+}
+@keyframes cn-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes cn-fade-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+@keyframes cn-skeleton {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.45;
+  }
+}
+@keyframes cn-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ───────────────────────── Reduced motion ─────────────────────────
+ * Transforms and blurs are removed, opacity fades are kept. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  ::before,
+  ::after {
+    transition-property: opacity !important;
+    scroll-behavior: auto !important;
+  }
+
+  .pressable:active {
+    transform: none !important;
+  }
+
+  @keyframes cn-pop-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  @keyframes cn-pop-out {
+    from {
+      opacity: 1;
+    }
+    to {
+      opacity: 0;
+    }
+  }
+  @keyframes cn-dialog-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  @keyframes cn-dialog-out {
+    from {
+      opacity: 1;
+    }
+    to {
+      opacity: 0;
+    }
+  }
+  @keyframes cn-panel-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  @keyframes cn-panel-out {
+    from {
+      opacity: 1;
+    }
+    to {
+      opacity: 0;
+    }
+  }
+
+  .cn-drawer[data-vaul-drawer][data-state="open"] {
+    animation-name: cn-fade-in !important;
+  }
+  .cn-drawer[data-vaul-drawer][data-state="closed"] {
+    animation-name: cn-fade-out !important;
+  }
 }

@@ -36,10 +36,10 @@ function makeClient() {
 
 export function QueryProvider({ children }: { children: ReactNode }) {
   const [client] = useState(makeClient);
+  // On the server (or with storage blocked) `storage` is undefined and the persister is a no-op,
+  // so server and client render the same tree.
   const [persister] = useState(() =>
-    typeof window === "undefined"
-      ? undefined
-      : createSyncStoragePersister({ storage: window.localStorage, key: "cn-cache-v1", throttleTime: 1000 }),
+    createSyncStoragePersister({ storage: safeLocalStorage(), key: "cn-cache-v1", throttleTime: 1000 }),
   );
 
   useEffect(() => {
@@ -51,7 +51,6 @@ export function QueryProvider({ children }: { children: ReactNode }) {
     return () => window.removeEventListener("online", onOnline);
   }, [client]);
 
-  if (!persister) return null;
   return (
     <PersistQueryClientProvider
       client={client}
@@ -67,6 +66,14 @@ export function QueryProvider({ children }: { children: ReactNode }) {
       {children}
     </PersistQueryClientProvider>
   );
+}
+
+function safeLocalStorage(): Storage | undefined {
+  try {
+    return typeof window === "undefined" ? undefined : window.localStorage;
+  } catch {
+    return undefined;
+  }
 }
 
 export function useOp<N extends OpName>(

@@ -9,7 +9,13 @@
     "lint": "eslint",
     "test": "vitest run --config vitest.config.mts",
     "test:unit": "vitest run --config vitest.config.mts",
-    "test:integration": "vitest run --config vitest.integration.config.mts"
+    "test:integration": "vitest run --config vitest.integration.config.mts",
+    "seed:demo": "tsx --tsconfig tsconfig.json scripts/seed-demo.ts",
+    "seed:reset": "supabase db reset",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "e2e": "playwright test",
+    "dev:local": "node scripts/local-env.mjs next dev",
+    "start:local": "node scripts/local-env.mjs next start"
   },
   "dependencies": {
     "@hookform/resolvers": "7.0.1",
