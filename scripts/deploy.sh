@@ -48,7 +48,7 @@ echo "  URL : $APP_URL"
 # ---------------------------------------------------------------- Auth config (OAuth server, redirects)
 echo "→ Configuration Auth (site URL, OAuth 2.1 + inscription dynamique)…"
 TMP_CFG=$(mktemp -d); cp -r supabase "$TMP_CFG/"
-sed -i "s#^signing_keys_path = .*## signing_keys_path (local dev key, never pushed)#; s#^site_url = .*#site_url = \"$APP_URL\"#; s#^additional_redirect_urls = .*#additional_redirect_urls = [\"$APP_URL/**\"]#" "$TMP_CFG/supabase/config.toml"
+sed -i "s|^signing_keys_path = .*|# signing_keys_path: local dev key, never pushed|; s#^site_url = .*#site_url = \"$APP_URL\"#; s#^additional_redirect_urls = .*#additional_redirect_urls = [\"$APP_URL/**\"]#" "$TMP_CFG/supabase/config.toml"
 (cd "$TMP_CFG" && $SB config push --project-ref "$SUPABASE_PROJECT_REF" --yes) || {
   echo "  ⚠ config push a échoué : active à la main Auth → OAuth Server (chemin /oauth/consent, inscription dynamique) et les clés JWT asymétriques (ES256)."; }
 rm -rf "$TMP_CFG"
