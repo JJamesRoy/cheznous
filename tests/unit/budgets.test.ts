@@ -59,7 +59,7 @@ describe("budgetStatus", () => {
     // 15 days elapsed (today counts), 30 days in November: 30000 / 15 × 30
     expect(budgetStatus({ budgetCents: 50000, spentCents: 30000, month: "2026-11", today: "2026-11-15" }).projectedCents).toBe(60000);
     // first day: 1000 × 30
-    expect(budgetStatus({ budgetCents: 50000, spentCents: 1000, month: "2026-11", today: "2026-11-01" }).projectedCents).toBe(30000);
+    expect(budgetStatus({ budgetCents: 50000, spentCents: 1000, month: "2026-11", today: "2026-11-01" }).projectedCents).toBe(5143); // 1000 + 1000/7 × 29
     // rounding: 1000 / 7 × 30 = 4285.71 → 4286
     expect(budgetStatus({ budgetCents: 50000, spentCents: 1000, month: "2026-11", today: "2026-11-07" }).projectedCents).toBe(4286);
     expect(budgetStatus({ budgetCents: 50000, spentCents: 1000, month: "2026-10", today: "2026-11-07" }).projectedCents).toBe(1000);

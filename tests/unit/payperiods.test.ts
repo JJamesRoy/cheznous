@@ -59,3 +59,19 @@ describe("pay periods (biweekly)", () => {
     );
   });
 });
+
+describe("payPeriodsOverlappingMonth", () => {
+  it("covers every day of the month exactly once, including days before the first payday", async () => {
+    const { payPeriodsOverlappingMonth } = await import("../../src/domain/payperiods");
+    const { daysInMonth } = await import("../../src/domain/dates");
+    for (const month of ["2026-01", "2026-02", "2026-07", "2026-11", "2027-02"]) {
+      const ps = payPeriodsOverlappingMonth("2026-01-02", month);
+      expect(ps.reduce((s, p) => s + p.days, 0)).toBe(daysInMonth(month));
+      expect(ps[0].start).toBe(`${month}-01`);
+      for (let i = 1; i < ps.length; i++) expect(ps[i].start).toBe(ps[i - 1].endExclusive);
+    }
+    const nov = payPeriodsOverlappingMonth("2026-01-02", "2026-11");
+    expect(nov[0]).toMatchObject({ payday: "2026-10-23", start: "2026-11-01", carriedOver: true, days: 5 });
+    expect(nov.map((p) => p.payday)).toEqual(["2026-10-23", "2026-11-06", "2026-11-20"]);
+  });
+});

@@ -3,7 +3,7 @@
 import { Progress } from "radix-ui";
 import { cn } from "@/lib/ui/cn";
 
-export type ProgressTone = "auto" | "neutral" | "accent" | "positive" | "warning" | "negative";
+export type ProgressTone = "auto" | "neutral" | "accent" | "positive" | "warning" | "negative" | "muted";
 
 export type ProgressBarProps = {
   /** Current value (e.g. spent cents). */
@@ -25,6 +25,7 @@ export type ProgressBarProps = {
 const fills: Record<Exclude<ProgressTone, "auto">, string> = {
   neutral: "bg-fg",
   accent: "bg-accent",
+  muted: "bg-gray-9",
   positive: "bg-positive",
   warning: "bg-warning",
   negative: "bg-negative",

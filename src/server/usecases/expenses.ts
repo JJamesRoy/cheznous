@@ -44,13 +44,14 @@ export type ExpenseRow = {
   created_by: string;
   created_at: string;
   updated_at: string;
+  updated_by: string | null;
   expense_splits: { user_id: string; share_cents: number; weight: number | null }[];
   budget_categories: { id: string; name: string } | null;
   refunds: { amount_cents: number }[];
 };
 
 export const EXPENSE_SELECT =
-  "id, household_id, amount_cents, description, spent_on, category_id, paid_by_user, paid_by_account, split_mode, is_private, notes, receipt_path, project_id, recurring_rule_id, shopping_item_id, created_by, created_at, updated_at, expense_splits(user_id, share_cents, weight), budget_categories(id, name), refunds(amount_cents)";
+  "id, household_id, amount_cents, description, spent_on, category_id, paid_by_user, paid_by_account, split_mode, is_private, notes, receipt_path, project_id, recurring_rule_id, shopping_item_id, created_by, created_at, updated_at, updated_by, expense_splits(user_id, share_cents, weight), budget_categories(id, name), refunds(amount_cents)";
 
 export function toExpenseDto(ctx: HouseholdCtx, r: ExpenseRow) {
   const order = ctx.household.members.map((m) => m.userId);
@@ -84,6 +85,7 @@ export function toExpenseDto(ctx: HouseholdCtx, r: ExpenseRow) {
     createdBy: r.created_by,
     createdAt: r.created_at,
     updatedAt: r.updated_at,
+    updatedBy: r.updated_by ? { userId: r.updated_by, name: memberName(ctx, r.updated_by) } : null,
   };
 }
 export type ExpenseDto = ReturnType<typeof toExpenseDto>;

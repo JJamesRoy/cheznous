@@ -1,5 +1,4 @@
 import { createHash, randomBytes } from "node:crypto";
-import type { TestUser } from "./helpers";
 
 const ISSUER = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/auth/v1`;
 const KEY = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!;
@@ -12,7 +11,7 @@ const b64url = (b: Buffer) => b.toString("base64").replace(/\+/g, "-").replace(/
  * MCP client performs it: discovery → dynamic client registration → /authorize → consent (as the
  * signed-in user, which is what our /oauth/consent page does) → token exchange.
  */
-export async function oauthAccessToken(user: TestUser): Promise<{ accessToken: string; refreshToken: string; clientId: string }> {
+export async function oauthAccessToken(user: { token: string }): Promise<{ accessToken: string; refreshToken: string; clientId: string }> {
   const meta = await (await fetch(`${ISSUER}/.well-known/oauth-authorization-server`)).json();
 
   const reg = await fetch(meta.registration_endpoint, {

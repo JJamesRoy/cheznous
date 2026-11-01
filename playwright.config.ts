@@ -13,7 +13,7 @@ export default defineConfig({
   expect: { timeout: 10_000 },
   reporter: [["list"]],
   use: {
-    baseURL: "http://localhost:3000",
+    baseURL: process.env.E2E_BASE_URL ?? "http://localhost:3000",
     locale: "fr-CA",
     timezoneId: "America/Toronto",
     trace: "retain-on-failure",
@@ -22,7 +22,8 @@ export default defineConfig({
     { name: "e2e", testMatch: /flows\/.*\.spec\.ts/, use: { ...devices["Pixel 7"] } },
     { name: "screenshots", testMatch: /screenshots\.spec\.ts/ },
   ],
-  webServer: {
+  // E2E_BASE_URL lets you point at an already running server (e.g. a dev server while iterating).
+  webServer: process.env.E2E_BASE_URL ? undefined : {
     command: "node scripts/local-env.mjs next start -p 3000",
     url: "http://localhost:3000/connexion",
     reuseExistingServer: true,

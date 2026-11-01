@@ -8,8 +8,8 @@ import { extendTailwindMerge } from "tailwind-merge";
 const twMerge = extendTailwindMerge({
   extend: {
     theme: {
-      text: ["xs", "sm", "base", "md", "lg", "xl", "2xl", "display", "input"],
-      radius: ["control", "card", "sheet"],
+      text: ["xs", "sm", "base", "md", "lg", "xl", "2xl", "display", "hero", "input"],
+      radius: ["control", "inner", "card", "sheet"],
       shadow: ["float"],
       ease: ["snappy", "io", "out", "in-out"],
     },

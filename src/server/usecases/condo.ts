@@ -1064,6 +1064,8 @@ export const addDocument = defineOp({
     mimeType: z.string().max(120).optional(),
     sizeBytes: z.number().int().nonnegative().max(1_000_000_000).optional(),
     applianceId: z.string().uuid().optional(),
+    /** Attach to a note instead (privacy follows the note through RLS). */
+    noteId: z.string().uuid().optional(),
     documentDate: zDay.optional(),
   }),
   run: async (ctx, input) => {
@@ -1082,6 +1084,11 @@ export const addDocument = defineOp({
       externalUrl = cleanUrl(input.externalUrl!);
     }
     if (input.applianceId) await assertAppliance(ctx, input.applianceId);
+    if (input.noteId) {
+      // RLS hides the partner's private notes, so "not found" covers both cases.
+      const note = unwrap(await ctx.db.from("notes").select("id").eq("household_id", ctx.household.id).eq("id", input.noteId).maybeSingle());
+      if (!note) throw new AppError("NOT_FOUND", "Note introuvable.");
+    }
     const row = unwrap(
       await ctx.db
         .from("documents")
@@ -1094,6 +1101,7 @@ export const addDocument = defineOp({
           mime_type: input.mimeType ?? null,
           size_bytes: input.sizeBytes ?? null,
           appliance_id: input.applianceId ?? null,
+          note_id: input.noteId ?? null,
           document_date: input.documentDate ?? null,
         })
         .select(DOCUMENT_SELECT)

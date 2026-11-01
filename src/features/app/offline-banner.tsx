@@ -14,7 +14,7 @@ export function OfflineBanner() {
   return (
     <div
       role="status"
-      className="mx-4 mt-3 flex items-center gap-2 rounded-card border border-border bg-surface-2 px-3 py-2 text-sm text-fg-muted md:mx-0"
+      className="mt-3 flex items-center gap-2 rounded-card border border-border bg-surface-2 px-3 py-2 text-sm text-fg-muted "
       data-testid="offline-banner"
     >
       {online ? <RefreshCw className="size-4 animate-spin motion-reduce:animate-none" aria-hidden /> : <CloudOff className="size-4" aria-hidden />}

@@ -58,3 +58,33 @@ export async function op<T = unknown>(page: Page, name: string, input: unknown =
     [name, input] as const,
   ) as Promise<T>;
 }
+
+export async function signUpApi(p: Person) {
+  const sb = createClient(SUPABASE_URL, PUBLISHABLE_KEY, { auth: { persistSession: false } });
+  const { error } = await sb.auth.signUp({ email: p.email, password: p.password, options: { data: { display_name: p.name } } });
+  if (error) throw new Error(error.message);
+}
+
+export type Couple = { a: Person; b: Person; pageA: Page; pageB: Page; ctxA: BrowserContext; ctxB: BrowserContext; close: () => Promise<void> };
+
+/**
+ * A ready couple, each signed in in their own browser context. Onboarding itself is covered by
+ * 01-onboarding.spec.ts through the UI; other flows start here to stay fast.
+ */
+export async function couple(browser: Browser, names: [string, string] = ["Camille", "Alex"]): Promise<Couple> {
+  const a = person(names[0]);
+  const b = person(names[1]);
+  await Promise.all([signUpApi(a), signUpApi(b)]);
+  const ctxA = await newContext(browser);
+  const ctxB = await newContext(browser);
+  const pageA = await ctxA.newPage();
+  const pageB = await ctxB.newPage();
+  await signIn(pageA, a, "/reglages");
+  await op(pageA, "household.create", { name: "Chez nous", displayName: a.name });
+  const inv = await op<{ token: string }>(pageA, "household.invite", {});
+  await signIn(pageB, b, "/reglages");
+  await op(pageB, "invitation.accept", { token: inv.token, displayName: b.name });
+  await op(pageA, "household.updateSettings", { onboardingStep: "done" });
+  await Promise.all([pageA.goto("/"), pageB.goto("/")]);
+  return { a, b, pageA, pageB, ctxA, ctxB, close: async () => void (await Promise.all([ctxA.close(), ctxB.close()])) };
+}

@@ -38,3 +38,28 @@ export const payPeriodsInMonth = payPeriodsForMonth;
 export function isThreePaydayMonth(anchorPayday: CivilDate, month: CivilMonth): boolean {
   return payPeriodsForMonth(anchorPayday, month).length === 3;
 }
+
+export interface ClippedPayPeriod extends PayPeriod {
+  /** The pay period as a whole (may start in the previous month). */
+  periodStart: CivilDate;
+  periodEndExclusive: CivilDate;
+  /** True when the period began with a payday in the previous month. */
+  carriedOver: boolean;
+  /** Days of this period that fall inside the month. */
+  days: number;
+}
+
+/**
+ * Every pay period that overlaps the month, clipped to the month, so that every day of the month
+ * belongs to exactly one period (spending before the first payday of the month is not lost).
+ */
+export function payPeriodsOverlappingMonth(anchorPayday: CivilDate, month: CivilMonth): ClippedPayPeriod[] {
+  const { start, endExclusive } = monthRange(month);
+  const paydays = paydaysBetween(anchorPayday, addDays(start, -(PAY_PERIOD_DAYS - 1)), addDays(endExclusive, -1));
+  return paydays.map((payday) => {
+    const periodEndExclusive = addDays(payday, PAY_PERIOD_DAYS);
+    const s = payday < start ? start : payday;
+    const e = periodEndExclusive > endExclusive ? endExclusive : periodEndExclusive;
+    return { payday, start: s, endExclusive: e, periodStart: payday, periodEndExclusive, carriedOver: payday < start, days: diffDays(s, e) };
+  });
+}

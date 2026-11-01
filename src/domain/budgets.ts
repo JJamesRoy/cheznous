@@ -6,6 +6,8 @@ export const NO_CATEGORY = "__none__";
 
 /** Seuil d'avertissement (ratio dépensé/budget). */
 export const BUDGET_WARNING_RATIO = 0.85;
+/** Minimum number of days the spending pace is measured over (early-month damping). */
+export const MIN_PACE_DAYS = 7;
 
 /**
  * Budget en vigueur par catégorie pour un mois : la ligne la plus récente dont le
@@ -96,8 +98,12 @@ export function budgetStatus(input: {
 
   let projectedCents: Cents;
   if (month === todayMonth) {
+    // Linear pace, but measured over at least MIN_PACE_DAYS: on the 1st of the month a single
+    // purchase would otherwise be multiplied by 30.
     const elapsed = dateParts(today).day;
-    projectedCents = Number(divRoundHalfUp(BigInt(spentCents) * BigInt(daysInMonth(month)), BigInt(elapsed)));
+    const remaining = daysInMonth(month) - elapsed;
+    const paceDays = Math.max(elapsed, MIN_PACE_DAYS);
+    projectedCents = spentCents + Number(divRoundHalfUp(BigInt(spentCents) * BigInt(remaining), BigInt(paceDays)));
   } else if (month < todayMonth) {
     projectedCents = spentCents;
   } else {

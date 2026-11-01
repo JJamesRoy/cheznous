@@ -6,7 +6,8 @@ import { moneyToCents, resolveCategory, selectAll, today, zDate, zMoney, zMonth 
 import { budgetStatus, compareMonths, effectiveBudgets, NO_CATEGORY, spendingByCategory } from "../../domain/budgets";
 import { addMonths, formatDateFr, formatMonthFr, monthOf, monthRange, parseMonth, addDays } from "../../domain/dates";
 import { formatMoney } from "../../domain/money";
-import { isThreePaydayMonth, payPeriodsForMonth } from "../../domain/payperiods";
+import { isThreePaydayMonth, payPeriodsOverlappingMonth } from "../../domain/payperiods";
+import { allocate } from "../../domain/splits";
 
 type Category = { id: string; name: string; kind: "fixed" | "variable"; sort: number; archived: boolean };
 
@@ -287,22 +288,27 @@ export const payPeriodBudget = defineOp({
       return { month, configured: false as const, message: "Ajoute une date de paie dans Réglages pour voir le budget par période de paie." };
     }
     const who = anchors.find((m) => m.userId === ctx.userId) ?? anchors[0];
-    const periods = payPeriodsForMonth(who.payAnchorDate!, month);
+    // Every day of the month belongs to exactly one (clipped) pay period; the monthly budget is
+    // spread over them by days, with exact cents (largest remainder).
+    const periods = payPeriodsOverlappingMonth(who.payAnchorDate!, month);
     const budget = await monthBudget(ctx, month);
-    const perPeriodBudget = periods.length ? Math.floor(budget.totals.budgetCents / periods.length) : 0;
+    const shares = allocate(budget.totals.budgetCents, periods.map((p) => ({ id: p.payday, weight: p.days })));
     const out = [];
-    for (const p of periods) {
+    for (const [i, p] of periods.entries()) {
       const s = await spendingBetween(ctx, p.start, p.endExclusive);
       const spent = sum(s.byCategory);
+      const periodBudget = shares[i].cents;
       out.push({
         payday: p.payday,
         start: p.start,
         endExclusive: p.endExclusive,
-        label: `Paie du ${formatDateFr(p.payday)}`,
+        carriedOver: p.carriedOver,
+        days: p.days,
+        label: p.carriedOver ? `Paie du ${formatDateFr(p.payday)} (début du mois)` : `Paie du ${formatDateFr(p.payday)}`,
         spentCents: spent,
         spent: formatMoney(spent),
-        budgetCents: perPeriodBudget,
-        budget: formatMoney(perPeriodBudget),
+        budgetCents: periodBudget,
+        budget: formatMoney(periodBudget),
       });
     }
     return {

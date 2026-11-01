@@ -12,7 +12,7 @@ import {
   DropdownMenuTrigger,
 } from "./dropdown-menu";
 
-export type Assignee = { id: string; name: string; avatarUrl?: string | null };
+export type Assignee = { id: string; name: string; avatarUrl?: string | null; tone?: "a" | "b" | "joint" | "neutral" };
 
 export type AssigneePickerProps = {
   people: Assignee[];
@@ -50,7 +50,7 @@ export function AssigneePicker({
         )}
       >
         {selected ? (
-          <Avatar name={selected.name} src={selected.avatarUrl} size="sm" decorative />
+          <Avatar name={selected.name} src={selected.avatarUrl} tone={selected.tone} size="sm" decorative />
         ) : (
           <span className="flex size-6 items-center justify-center rounded-full border border-dashed border-gray-8 text-fg-subtle">
             <UserRound className="size-3.5" aria-hidden />
@@ -70,7 +70,7 @@ export function AssigneePicker({
             <DropdownMenuRadioItem
               key={person.id}
               value={person.id}
-              icon={<Avatar name={person.name} src={person.avatarUrl} size="sm" decorative />}
+              icon={<Avatar name={person.name} src={person.avatarUrl} tone={person.tone} size="sm" decorative />}
             >
               {person.name}
             </DropdownMenuRadioItem>
