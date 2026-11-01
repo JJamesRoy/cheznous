@@ -50,3 +50,6 @@ supabase/signing_keys.json
 /playwright-report/
 /e2e/.auth/
 /.next-*/
+
+# local import data (personal, never committed)
+/data/import/

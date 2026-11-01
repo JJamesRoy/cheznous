@@ -14,6 +14,7 @@ const TABLES = [
   "savings_goals", "goal_contributions", "shopping_lists", "shopping_items", "tasks", "task_checklist_items",
   "task_completions", "notes", "properties", "mortgages", "mortgage_prepayments", "mortgage_statements",
   "special_assessments", "appliances", "maintenance_records", "documents", "capital_contributions", "audit_logs",
+  "personal_budgets", "ai_insights",
 ] as const;
 
 describe("RLS: household isolation", () => {

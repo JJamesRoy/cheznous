@@ -204,10 +204,11 @@ export function registerTools(register: Register) {
   register({
     name: "get_budget",
     title: "Budget du mois",
-    description: "Budget d'un mois par catégorie : prévu, dépensé, restant, état (sous / attention / dépassé) et projection de fin de mois. Mois par défaut : le mois courant (Montréal).",
-    input: { month: month.optional() },
+    description:
+      "Budget d'un mois par catégorie : prévu, dépensé, restant, état (sous / attention / dépassé) et projection de fin de mois. Mois par défaut : le mois courant (Montréal). scope=personal : le budget perso de la personne connectée (ses dépenses privées seulement).",
+    input: { month: month.optional(), scope: z.enum(["household", "personal"]).optional() },
     annotations: READ,
-    run: async (ctx, a) => execute(budget.getBudget, ctx, { month: a.month }),
+    run: async (ctx, a) => execute(budget.getBudget, ctx, { month: a.month, scope: a.scope }),
   });
 
   register({

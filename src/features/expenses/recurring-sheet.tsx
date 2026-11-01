@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowLeft, Plus, Trash2, X } from "lucide-react";
+import { ArrowLeft, Lock, Plus, Trash2, X } from "lucide-react";
 import { useState } from "react";
 import {
   Avatar,
@@ -43,28 +43,37 @@ export type RecurringSheetProps = {
   onOpenChange: (open: boolean) => void;
   /** Open straight on a new rule of this kind. */
   startWith?: "list" | Kind;
+  /** Personal budget: only my private rules, and new rules are private. */
+  personal?: boolean;
 };
 
 /**
  * Bills (reminders on Accueil · À venir) and recurring expenses (added automatically on their
  * due date). Supports every frequency, including « Aux deux mois » and fixed instalment dates.
  */
-export function RecurringSheet({ open, onOpenChange, startWith = "list" }: RecurringSheetProps) {
+export function RecurringSheet({ open, onOpenChange, startWith = "list", personal = false }: RecurringSheetProps) {
   return (
-    <Sheet open={open} onOpenChange={onOpenChange} title="Récurrences" description="Factures à venir et dépenses ajoutées automatiquement." desktop="panel">
-      <RecurringBody startWith={startWith} />
+    <Sheet
+      open={open}
+      onOpenChange={onOpenChange}
+      title={personal ? "Mes récurrences perso" : "Récurrences"}
+      description={personal ? "Tes dépenses privées qui reviennent (gym, abonnements…). Ton ou ta partenaire ne les voit pas." : "Factures à venir et dépenses ajoutées automatiquement."}
+      desktop="panel"
+    >
+      {open ? <RecurringBody startWith={startWith} personal={personal} /> : null}
     </Sheet>
   );
 }
 
-function RecurringBody({ startWith }: { startWith: "list" | Kind }) {
+function RecurringBody({ startWith, personal }: { startWith: "list" | Kind; personal: boolean }) {
   const [editing, setEditing] = useState<{ rule: Rule | null; kind: Kind } | null>(startWith === "list" ? null : { rule: null, kind: startWith });
-  if (editing) return <RuleForm key={editing.rule?.id ?? "new"} rule={editing.rule} kind={editing.kind} onBack={() => setEditing(null)} />;
-  return <RuleList onEdit={(rule) => setEditing({ rule, kind: rule.kind })} onNew={(kind) => setEditing({ rule: null, kind })} />;
+  if (editing)
+    return <RuleForm key={editing.rule?.id ?? "new"} rule={editing.rule} kind={editing.kind} personal={personal} onBack={() => setEditing(null)} />;
+  return <RuleList personal={personal} onEdit={(rule) => setEditing({ rule, kind: rule.kind })} onNew={(kind) => setEditing({ rule: null, kind })} />;
 }
 
-function RuleList({ onEdit, onNew }: { onEdit: (r: Rule) => void; onNew: (k: Kind) => void }) {
-  const q = useOp("recurring.list", {});
+function RuleList({ personal, onEdit, onNew }: { personal: boolean; onEdit: (r: Rule) => void; onNew: (k: Kind) => void }) {
+  const q = useOp("recurring.list", personal ? { isPrivate: true } : {});
   if (q.isPending)
     return (
       <div className="flex flex-col gap-2" aria-busy>
@@ -86,14 +95,25 @@ function RuleList({ onEdit, onNew }: { onEdit: (r: Rule) => void; onNew: (k: Kin
   return (
     <div className="flex flex-col gap-4">
       {rules.length === 0 ? (
-        <EmptyState
-          message="Aucune facture ni dépense récurrente. Ajoute Hydro-Québec, les frais de condo ou la taxe scolaire."
-          action={
-            <Button variant="primary" onClick={() => onNew("bill")}>
-              Ajouter une facture récurrente
-            </Button>
-          }
-        />
+        personal ? (
+          <EmptyState
+            message="Aucune dépense perso récurrente. Ajoute ton gym, tes abonnements ou ton cellulaire."
+            action={
+              <Button variant="primary" onClick={() => onNew("expense")}>
+                Ajouter une dépense perso récurrente
+              </Button>
+            }
+          />
+        ) : (
+          <EmptyState
+            message="Aucune facture ni dépense récurrente. Ajoute Hydro-Québec, les frais de condo ou la taxe scolaire."
+            action={
+              <Button variant="primary" onClick={() => onNew("bill")}>
+                Ajouter une facture récurrente
+              </Button>
+            }
+          />
+        )
       ) : (
         <ListGroup as="ul" aria-label="Récurrences">
           {rules.map((r) => (
@@ -101,7 +121,12 @@ function RuleList({ onEdit, onNew }: { onEdit: (r: Rule) => void; onNew: (k: Kin
               <Row
                 onClick={() => onEdit(r)}
                 title={r.title}
-                description={[r.frequencyLabel, r.next ? `prochaine ${r.next.relative}` : null, r.kind === "expense" ? (r.autoCreate ? "ajout auto" : "dépense") : "rappel"]
+                description={[
+                  r.isPrivate && !personal ? "perso" : null,
+                  r.frequencyLabel,
+                  r.next ? `prochaine ${r.next.relative}` : null,
+                  r.kind === "expense" ? (r.autoCreate ? "ajout auto" : "dépense") : "rappel",
+                ]
                   .filter(Boolean)
                   .join(" · ")}
                 trailing={r.amountCents !== null ? <Money cents={r.amountCents} className="text-base text-fg" /> : <span className="text-sm text-fg-subtle">Montant variable</span>}
@@ -124,7 +149,7 @@ function RuleList({ onEdit, onNew }: { onEdit: (r: Rule) => void; onNew: (k: Kin
   );
 }
 
-function RuleForm({ rule, kind: initialKind, onBack }: { rule: Rule | null; kind: Kind; onBack: () => void }) {
+function RuleForm({ rule, kind: initialKind, personal, onBack }: { rule: Rule | null; kind: Kind; personal: boolean; onBack: () => void }) {
   const session = useSession();
   const { me, partner, members, joint } = useMembers();
   const ids = members.map((m) => m.userId);
@@ -140,6 +165,7 @@ function RuleForm({ rule, kind: initialKind, onBack }: { rule: Rule | null; kind
   const [endDate, setEndDate] = useState(rule?.endDate ?? "");
   const [payer, setPayer] = useState<string>(tpl?.payer && (tpl.payer === "commun" || ids.includes(tpl.payer)) ? tpl.payer : "commun");
   const [autoCreate, setAutoCreate] = useState(rule?.autoCreate ?? initialKind === "expense");
+  const [isPrivate, setIsPrivate] = useState(rule?.isPrivate ?? personal);
   const [error, setError] = useState<string | null>(null);
   const [confirmDelete, setConfirmDelete] = useState(false);
 
@@ -168,9 +194,10 @@ function RuleForm({ rule, kind: initialKind, onBack }: { rule: Rule | null; kind
       anchorDate: frequency === "installments" ? clean[0] : anchor,
       installmentDates: frequency === "installments" ? clean : undefined,
       endDate: endDate || null,
-      payer,
+      payer: isPrivate ? me.userId : payer,
       autoCreate: kind === "expense" ? autoCreate : false,
       active: true,
+      isPrivate,
     });
   }
 
@@ -264,10 +291,22 @@ function RuleForm({ rule, kind: initialKind, onBack }: { rule: Rule | null; kind
           </Field>
         </div>
       )}
-      <div className="flex flex-col gap-1.5">
-        <span className="text-sm font-medium text-fg">Payé par</span>
-        <ChipGroup aria-label="Payé par" value={payer} onValueChange={setPayer} options={payerOptions} layout="scroll" />
-      </div>
+      <Switch
+        label="Perso (privée)"
+        description="Payée par toi, jamais partagée, comptée dans ton budget perso. Ton ou ta partenaire ne la voit pas."
+        checked={isPrivate}
+        onCheckedChange={setIsPrivate}
+      />
+      {isPrivate ? (
+        <p className="flex items-center gap-1.5 text-sm text-fg-subtle">
+          <Lock aria-hidden className="size-3.5" /> Payée par toi
+        </p>
+      ) : (
+        <div className="flex flex-col gap-1.5">
+          <span className="text-sm font-medium text-fg">Payé par</span>
+          <ChipGroup aria-label="Payé par" value={payer} onValueChange={setPayer} options={payerOptions} layout="scroll" />
+        </div>
+      )}
       {kind === "expense" ? (
         <Switch label="Ajouter la dépense automatiquement" description="Créée à l'échéance, à la prochaine ouverture de l'app" checked={autoCreate} onCheckedChange={setAutoCreate} />
       ) : null}

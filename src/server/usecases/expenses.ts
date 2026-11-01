@@ -300,6 +300,8 @@ export const zExpenseFilters = z.object({
   project: z.string().max(100).optional(),
   search: z.string().max(100).optional(),
   includePrivate: z.boolean().optional(),
+  /** Only my private expenses (personal budget). */
+  onlyPrivate: z.boolean().optional(),
   limit: z.number().int().min(1).max(500).default(100),
   offset: z.number().int().min(0).default(0),
   sort: z.enum(["date_desc", "date_asc", "amount_desc", "amount_asc"]).default("date_desc"),
@@ -324,6 +326,7 @@ export const listExpenses = defineOp({
       if (key) q = q.ilike("match_key", `%${key.replace(/[%_]/g, "")}%`);
     }
     if (input.includePrivate === false) q = q.eq("is_private", false);
+    if (input.onlyPrivate) q = q.eq("is_private", true);
     const [col, asc] =
       input.sort === "amount_desc" ? ["amount_cents", false] : input.sort === "amount_asc" ? ["amount_cents", true] : ["spent_on", input.sort === "date_asc"];
     q = q.order(col as string, { ascending: asc as boolean }).order("created_at", { ascending: asc as boolean });

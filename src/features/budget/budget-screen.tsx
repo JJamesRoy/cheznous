@@ -1,12 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { ChevronDown, ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronDown, ChevronLeft, ChevronRight, Lock, Plus, Repeat } from "lucide-react";
 import { useCallback, useState } from "react";
 import { PageHeader } from "@/components/shell";
-import { Button, EmptyState, IconButton, Kbd, ListGroup, Money, ProgressBar, SegmentedControl, Skeleton } from "@/components/ui";
+import { Button, EmptyState, IconButton, Kbd, ListGroup, Money, ProgressBar, Row, SegmentedControl, Skeleton } from "@/components/ui";
 import { addMonths, formatMonthFr } from "@/domain/dates";
 import { useSession } from "@/features/app/session";
+import { useQuickAdd } from "@/features/app/quick-add";
+import { RecurringSheet } from "@/features/expenses/recurring-sheet";
 import { Card, QueryError, Section } from "@/features/condo/ui";
 import type { OpOutput } from "@/lib/data/api";
 import { useOp } from "@/lib/data/query";
@@ -17,17 +19,23 @@ import { useIsDesktop } from "@/lib/ui/use-media-query";
 import { Comparison, monthLabelFr, PayPeriodsView, RemainingText } from "./budget-parts";
 import { CategorySheet, type BudgetLine } from "./category-sheet";
 import { HistoryChart } from "./history-chart";
+import { AiInsights } from "./ai-insights";
 
 type Budget = OpOutput<"budget.get">;
 type Line = Budget["lines"][number];
+export type Scope = "household" | "personal";
 
 export function BudgetScreen() {
   const session = useSession();
   const [month, setMonth] = useState(session.month);
-  const [mode, setMode] = useState<"month" | "pay">("month");
+  const [scope, setScope] = useState<Scope>("household");
+  const [modeState, setMode] = useState<"month" | "pay">("month");
+  // Pay periods are a household view (shared spending by pay cycle).
+  const mode = scope === "personal" ? "month" : modeState;
   const [sheet, setSheet] = useState<{ line: BudgetLine | null } | null>(null);
   const desktop = useIsDesktop();
-  const q = useOp("budget.get", { month }, { placeholderData: (prev) => prev });
+  const personal = scope === "personal";
+  const q = useOp("budget.get", { month, scope }, { placeholderData: (prev) => prev });
 
   const go = useCallback((n: number) => setMonth((m) => addMonths(m, n)), []);
   useHotkeys(
@@ -59,21 +67,39 @@ export function BudgetScreen() {
 
   return (
     <div className="flex flex-col gap-8 pb-8">
-      <PageHeader title="Budget" description="Vos dépenses partagées, catégorie par catégorie." className="pb-0" />
+      <PageHeader
+        title="Budget"
+        description={personal ? "Tes dépenses perso (privées), catégorie par catégorie. Toi seul·e les vois." : "Vos dépenses partagées, catégorie par catégorie."}
+        className="pb-0"
+      />
+
+      <SegmentedControl
+        aria-label="Budget du foyer ou budget perso"
+        value={scope}
+        onValueChange={setScope}
+        fill={!desktop}
+        className="sm:w-auto sm:self-start"
+        options={[
+          { value: "household", label: "Foyer" },
+          { value: "personal", label: "Perso" },
+        ]}
+      />
 
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <MonthSwitcher month={month} onPrev={() => go(-1)} onNext={() => go(1)} isCurrent={month === session.month} onToday={() => setMonth(session.month)} />
-        <SegmentedControl
-          aria-label="Vue du budget"
-          value={mode}
-          onValueChange={setMode}
-          fill={!desktop}
-          className="sm:w-auto"
-          options={[
-            { value: "month", label: "Mois" },
-            { value: "pay", label: "Périodes de paie" },
-          ]}
-        />
+        {personal ? null : (
+          <SegmentedControl
+            aria-label="Vue du budget"
+            value={mode}
+            onValueChange={setMode}
+            fill={!desktop}
+            className="sm:w-auto"
+            options={[
+              { value: "month", label: "Mois" },
+              { value: "pay", label: "Périodes de paie" },
+            ]}
+          />
+        )}
       </div>
 
       {q.isPending ? (
@@ -84,16 +110,22 @@ export function BudgetScreen() {
         <div className={cn("flex flex-col gap-8 transition-opacity duration-[220ms]", stale && "opacity-60")} aria-busy={stale}>
           {noBudget ? (
             <EmptyState
-              message={`Aucun budget pour ${formatMonthFr(month)}. Fixe un montant par catégorie pour suivre ce qui reste à dépenser.`}
+              message={
+                personal
+                  ? `Aucun budget perso pour ${formatMonthFr(month)}. Fixe un montant par catégorie pour tes dépenses à toi (gym, vêtements, sorties…).`
+                  : `Aucun budget pour ${formatMonthFr(month)}. Fixe un montant par catégorie pour suivre ce qui reste à dépenser.`
+              }
               action={
                 <Button variant="primary" onClick={() => setSheet({ line: null })}>
-                  Définir mon premier budget
+                  {personal ? "Définir mon budget perso" : "Définir mon premier budget"}
                 </Button>
               }
             />
           ) : (
             <Totals data={data} day={Number(session.today.slice(8, 10))} />
           )}
+
+          {personal ? <PersonalExpenses /> : null}
 
           {mode === "pay" ? (
             <Section title="Par période de paie" id="budget-pay">
@@ -112,10 +144,12 @@ export function BudgetScreen() {
 
           {mode === "month" ? (
             <>
-              <History month={month} currentMonth={session.month} />
-              <Comparison month={month} compareMonth={addMonths(month, -1)} />
+              <History month={month} currentMonth={session.month} scope={scope} />
+              {personal ? null : <Comparison month={month} compareMonth={addMonths(month, -1)} />}
             </>
           ) : null}
+
+          <AiInsights />
         </div>
       ) : null}
 
@@ -126,6 +160,7 @@ export function BudgetScreen() {
         month={month}
         currentMonth={session.month}
         categories={visibleCategories}
+        scope={scope}
       />
     </div>
   );
@@ -416,8 +451,58 @@ function CategoryRow({
   );
 }
 
-function History({ month, currentMonth }: { month: string; currentMonth: string }) {
-  const q = useOp("budget.history", { months: 6 });
+/** Personal budget: add a one-off private expense, or manage private recurring ones (gym…). */
+function PersonalExpenses() {
+  const quickAdd = useQuickAdd();
+  const [recurring, setRecurring] = useState<null | "list" | "expense">(null);
+  const q = useOp("recurring.list", { isPrivate: true });
+  const rules = q.data?.rules ?? [];
+  return (
+    <Section
+      title="Mes dépenses perso"
+      id="budget-perso"
+      description="Privées : payées par toi, jamais partagées, invisibles pour ton ou ta partenaire."
+    >
+      <div className="flex flex-col gap-3">
+        <div className="flex flex-wrap gap-2">
+          <Button variant="primary" onClick={() => quickAdd.open("expense", { isPrivate: true })}>
+            <Plus aria-hidden /> Dépense perso
+          </Button>
+          <Button onClick={() => setRecurring("expense")}>
+            <Repeat aria-hidden /> Dépense perso récurrente
+          </Button>
+        </div>
+        {q.isPending ? (
+          <Skeleton shape="card" className="h-[52px]" />
+        ) : rules.length ? (
+          <ListGroup as="ul" aria-label="Mes récurrences perso">
+            {rules.map((r) => (
+              <li key={r.id}>
+                <Row
+                  onClick={() => setRecurring("list")}
+                  title={
+                    <span className="flex items-center gap-1.5">
+                      <Lock aria-hidden className="size-3.5 text-fg-subtle" />
+                      {r.title}
+                    </span>
+                  }
+                  description={[r.frequencyLabel, r.next ? `prochaine ${r.next.relative}` : null, r.autoCreate ? "ajout auto" : null].filter(Boolean).join(" · ")}
+                  trailing={r.amountCents !== null ? <Money cents={r.amountCents} className="text-base text-fg" /> : null}
+                />
+              </li>
+            ))}
+          </ListGroup>
+        ) : (
+          <p className="text-sm text-fg-subtle">Aucune récurrence perso. Ajoute ton gym ou tes abonnements : ils s&apos;ajouteront tout seuls à ton budget perso.</p>
+        )}
+      </div>
+      <RecurringSheet open={recurring !== null} onOpenChange={(o) => !o && setRecurring(null)} startWith={recurring === "expense" ? "expense" : "list"} personal />
+    </Section>
+  );
+}
+
+function History({ month, currentMonth, scope }: { month: string; currentMonth: string; scope: Scope }) {
+  const q = useOp("budget.history", { months: 6, scope });
   return (
     <Section title="6 derniers mois" id="budget-history">
       <Card className="p-4 sm:p-5">
@@ -427,7 +512,7 @@ function History({ month, currentMonth }: { month: string; currentMonth: string 
           <QueryError error={q.error} onRetry={() => q.refetch()} what="l'historique" className="bg-transparent p-0" />
         ) : (
           <HistoryChart
-            title="Dépenses partagées par mois et budget du mois"
+            title={scope === "personal" ? "Dépenses perso par mois et budget du mois" : "Dépenses partagées par mois et budget du mois"}
             points={q.data.months}
             currentMonth={currentMonth}
             highlightMonth={month}

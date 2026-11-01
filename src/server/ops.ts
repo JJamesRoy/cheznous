@@ -12,12 +12,13 @@ import * as condo from "./usecases/condo";
 import * as keydates from "./usecases/keydates";
 import * as goals from "./usecases/goals";
 import * as dashboard from "./usecases/dashboard";
+import * as insights from "./usecases/insights";
 
 /**
  * Every operation of the app. The app RPC route (/api/ops/[op]) and the MCP server
  * both dispatch through this registry — there is no other path to business logic.
  */
-const modules = { household, expenses, balances, budget, shopping, tasks, notes, recurring, condo, keydates, goals, dashboard };
+const modules = { household, expenses, balances, budget, shopping, tasks, notes, recurring, condo, keydates, goals, dashboard, insights };
 
 type Modules = typeof modules;
 type ExportsOf<M> = M[keyof M];

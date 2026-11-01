@@ -34,4 +34,16 @@ export const serverEnv = {
     const n = Number(process.env.MCP_RATE_LIMIT_PER_MINUTE ?? "60");
     return Number.isFinite(n) && n > 0 ? n : 60;
   },
+  /** AI recommendations: Claude API key (primary). */
+  get anthropicApiKey() {
+    return process.env.ANTHROPIC_API_KEY || "";
+  },
+  /** AI recommendations: OpenRouter key, used only when the Claude API call fails. */
+  get openRouterApiKey() {
+    return process.env.OPENROUTER_API_KEY || "";
+  },
+  /** OpenRouter model slug for the fallback (check the exact id on openrouter.ai/models). */
+  get openRouterModel() {
+    return process.env.OPENROUTER_MODEL || "anthropic/claude-opus-5.5";
+  },
 };

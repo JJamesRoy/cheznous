@@ -188,8 +188,21 @@ export function monthLabelFr(m: string): string {
 // Expenses list (category sheet)
 // ---------------------------------------------------------------------------
 
-export function CategoryExpenses({ categoryId, from, to, monthLabel }: { categoryId: string; from: string; to: string; monthLabel: string }) {
-  const q = useOp("expenses.list", { category: categoryId, from, to, limit: 100 });
+export function CategoryExpenses({
+  categoryId,
+  from,
+  to,
+  monthLabel,
+  onlyPrivate = false,
+}: {
+  categoryId: string;
+  from: string;
+  to: string;
+  monthLabel: string;
+  /** Personal budget: only my private expenses. Otherwise only shared ones count in the budget. */
+  onlyPrivate?: boolean;
+}) {
+  const q = useOp("expenses.list", onlyPrivate ? { category: categoryId, from, to, limit: 100, onlyPrivate: true } : { category: categoryId, from, to, limit: 100 });
   return (
     <section className="flex flex-col gap-2" aria-labelledby="cat-exp">
       <h3 id="cat-exp" className="text-sm font-medium text-fg-muted">

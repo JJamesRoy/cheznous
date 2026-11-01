@@ -11,22 +11,31 @@ import { allocate } from "../../domain/splits";
 
 type Category = { id: string; name: string; kind: "fixed" | "variable"; sort: number; archived: boolean };
 
+/**
+ * « household »: shared expenses (private rows excluded) against the household budget.
+ * « personal »: the signed-in member's PRIVATE expenses against their own budget. RLS only
+ * ever returns the caller's own private rows and personal budgets.
+ */
+export type BudgetScope = "household" | "personal";
+export const zBudgetScope = z.enum(["household", "personal"]).default("household");
+
 async function categories(ctx: HouseholdCtx): Promise<Category[]> {
   return unwrap(
     await ctx.db.from("budget_categories").select("id, name, kind, sort, archived").eq("household_id", ctx.household.id).order("sort"),
   ) as Category[];
 }
 
-/** Shared spending (private rows excluded) per category over [start, endExclusive). Refunds reduce spending. */
-export async function spendingBetween(ctx: HouseholdCtx, start: string, endExclusive: string) {
+/** Spending per category over [start, endExclusive) for a scope (see BudgetScope). Refunds reduce spending. */
+export async function spendingBetween(ctx: HouseholdCtx, start: string, endExclusive: string, scope: BudgetScope = "household") {
   const hid = ctx.household.id;
+  const personal = scope === "personal";
   const [exp, ref] = await Promise.all([
     selectAll<{ category_id: string | null; amount_cents: number; is_private: boolean; spent_on: string }>((from, to) =>
       ctx.db
         .from("expenses")
         .select("category_id, amount_cents, is_private, spent_on")
         .eq("household_id", hid)
-        .eq("is_private", false)
+        .eq("is_private", personal)
         .gte("spent_on", start)
         .lt("spent_on", endExclusive)
         .order("id")
@@ -44,32 +53,35 @@ export async function spendingBetween(ctx: HouseholdCtx, start: string, endExclu
     ),
   ]);
   const byCategory = spendingByCategory(
-    exp.map((e) => ({ categoryId: e.category_id, amountCents: Number(e.amount_cents), isPrivate: e.is_private, spentOn: e.spent_on })),
+    // spendingByCategory ignores private rows: in the personal scope every row is private by construction.
+    exp.map((e) => ({ categoryId: e.category_id, amountCents: Number(e.amount_cents), isPrivate: false, spentOn: e.spent_on })),
     ref
-      .filter((r) => r.expenses && !r.expenses.is_private)
+      .filter((r) => r.expenses && r.expenses.is_private === personal)
       .map((r) => ({ categoryId: r.expenses!.category_id, amountCents: Number(r.amount_cents), refundedOn: r.refunded_on })),
     { start, endExclusive },
   );
   return { byCategory, expenseCount: exp.length };
 }
 
-async function budgetRows(ctx: HouseholdCtx) {
+async function budgetRows(ctx: HouseholdCtx, scope: BudgetScope = "household") {
   const rows = unwrap(
-    await ctx.db.from("budgets").select("category_id, month, amount_cents").eq("household_id", ctx.household.id),
+    scope === "personal"
+      ? await ctx.db.from("personal_budgets").select("category_id, month, amount_cents").eq("household_id", ctx.household.id).eq("user_id", ctx.userId)
+      : await ctx.db.from("budgets").select("category_id, month, amount_cents").eq("household_id", ctx.household.id),
   ) as { category_id: string; month: string; amount_cents: number }[];
   return rows.map((r) => ({ categoryId: r.category_id, month: r.month, amountCents: Number(r.amount_cents) }));
 }
 
 const sum = (rec: Record<string, number>) => Object.values(rec).reduce((s, v) => s + v, 0);
 
-export async function monthBudget(ctx: HouseholdCtx, month: string) {
+export async function monthBudget(ctx: HouseholdCtx, month: string, scope: BudgetScope = "household") {
   const t = today(ctx);
   const { start, endExclusive } = monthRange(month);
   const [cats, rows, spending, prevSpending] = await Promise.all([
     categories(ctx),
-    budgetRows(ctx),
-    spendingBetween(ctx, start, endExclusive),
-    spendingBetween(ctx, monthRange(addMonths(month, -1)).start, start),
+    budgetRows(ctx, scope),
+    spendingBetween(ctx, start, endExclusive, scope),
+    spendingBetween(ctx, monthRange(addMonths(month, -1)).start, start, scope),
   ]);
   const budgets = effectiveBudgets(rows, month);
 
@@ -107,6 +119,7 @@ export async function monthBudget(ctx: HouseholdCtx, month: string) {
   const total = budgetStatus({ budgetCents: totalBudget || null, spentCents: totalSpent, month, today: t });
 
   return {
+    scope,
     month,
     monthLabel: formatMonthFr(month),
     isCurrentMonth: month === monthOf(t),
@@ -133,8 +146,8 @@ export async function monthBudget(ctx: HouseholdCtx, month: string) {
 export const getBudget = defineOp({
   name: "budget.get",
   kind: "read",
-  input: z.object({ month: zMonth.optional() }),
-  run: async (ctx, input) => monthBudget(ctx, input.month ? parseMonth(input.month) : monthOf(today(ctx))),
+  input: z.object({ month: zMonth.optional(), scope: zBudgetScope }),
+  run: async (ctx, input) => monthBudget(ctx, input.month ? parseMonth(input.month) : monthOf(today(ctx)), input.scope),
 });
 
 export const setBudget = defineOp({
@@ -145,17 +158,26 @@ export const setBudget = defineOp({
     /** Monthly amount. Applies from `fromMonth` onward until changed again. 0 removes the budget. */
     amount: zMoney,
     fromMonth: zMonth.optional(),
+    /** « personal » sets the caller's own budget (private expenses only). */
+    scope: zBudgetScope,
   }),
   run: async (ctx, input) => {
     const cat = await resolveCategory(ctx, input.category);
     const month = `${input.fromMonth ? parseMonth(input.fromMonth) : monthOf(today(ctx))}-01`;
     const amountCents = moneyToCents(input.amount);
     unwrap(
-      await ctx.db
-        .from("budgets")
-        .upsert({ household_id: ctx.household.id, category_id: cat.id, month, amount_cents: amountCents }, { onConflict: "household_id,category_id,month" }),
+      input.scope === "personal"
+        ? await ctx.db
+            .from("personal_budgets")
+            .upsert(
+              { household_id: ctx.household.id, user_id: ctx.userId, category_id: cat.id, month, amount_cents: amountCents },
+              { onConflict: "household_id,user_id,category_id,month" },
+            )
+        : await ctx.db
+            .from("budgets")
+            .upsert({ household_id: ctx.household.id, category_id: cat.id, month, amount_cents: amountCents }, { onConflict: "household_id,category_id,month" }),
     );
-    return { categoryId: cat.id, month, amountCents, amount: formatMoney(amountCents) };
+    return { scope: input.scope, categoryId: cat.id, month, amountCents, amount: formatMoney(amountCents) };
   },
 });
 
@@ -163,12 +185,15 @@ export const setBudget = defineOp({
 export const budgetHistory = defineOp({
   name: "budget.history",
   kind: "read",
-  input: z.object({ months: z.number().int().min(2).max(24).default(6), category: z.string().max(100).optional() }),
+  input: z.object({ months: z.number().int().min(2).max(24).default(6), category: z.string().max(100).optional(), scope: zBudgetScope }),
   run: async (ctx, input) => {
     const current = monthOf(today(ctx));
     const first = addMonths(current, -(input.months - 1));
     const cat = input.category ? await resolveCategory(ctx, input.category) : null;
-    const [spending, rows] = await Promise.all([spendingRowsBetween(ctx, monthRange(first).start, monthRange(current).endExclusive), budgetRows(ctx)]);
+    const [spending, rows] = await Promise.all([
+      spendingRowsBetween(ctx, monthRange(first).start, monthRange(current).endExclusive, input.scope),
+      budgetRows(ctx, input.scope),
+    ]);
     const months = Array.from({ length: input.months }, (_, i) => addMonths(first, i));
     return {
       category: cat,
@@ -184,19 +209,20 @@ export const budgetHistory = defineOp({
   },
 });
 
-async function spendingRowsBetween(ctx: HouseholdCtx, start: string, endExclusive: string) {
+async function spendingRowsBetween(ctx: HouseholdCtx, start: string, endExclusive: string, scope: BudgetScope = "household") {
   const hid = ctx.household.id;
+  const personal = scope === "personal";
   const [exp, ref] = await Promise.all([
     selectAll<{ category_id: string | null; amount_cents: number; is_private: boolean; spent_on: string }>((from, to) =>
-      ctx.db.from("expenses").select("category_id, amount_cents, is_private, spent_on").eq("household_id", hid).eq("is_private", false).gte("spent_on", start).lt("spent_on", endExclusive).order("id").range(from, to),
+      ctx.db.from("expenses").select("category_id, amount_cents, is_private, spent_on").eq("household_id", hid).eq("is_private", personal).gte("spent_on", start).lt("spent_on", endExclusive).order("id").range(from, to),
     ),
     selectAll<{ amount_cents: number; refunded_on: string; expenses: { category_id: string | null; is_private: boolean } | null }>((from, to) =>
       ctx.db.from("refunds").select("amount_cents, refunded_on, expenses(category_id, is_private)").eq("household_id", hid).gte("refunded_on", start).lt("refunded_on", endExclusive).order("id").range(from, to),
     ),
   ]);
   return {
-    expenses: exp.map((e) => ({ categoryId: e.category_id, amountCents: Number(e.amount_cents), isPrivate: e.is_private, spentOn: e.spent_on })),
-    refunds: ref.filter((r) => r.expenses && !r.expenses.is_private).map((r) => ({ categoryId: r.expenses!.category_id, amountCents: Number(r.amount_cents), refundedOn: r.refunded_on })),
+    expenses: exp.map((e) => ({ categoryId: e.category_id, amountCents: Number(e.amount_cents), isPrivate: false, spentOn: e.spent_on })),
+    refunds: ref.filter((r) => r.expenses && r.expenses.is_private === personal).map((r) => ({ categoryId: r.expenses!.category_id, amountCents: Number(r.amount_cents), refundedOn: r.refunded_on })),
   };
 }
 

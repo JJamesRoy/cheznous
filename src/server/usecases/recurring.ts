@@ -22,10 +22,12 @@ type RuleRow = {
   auto_create: boolean;
   materialized_until: string | null;
   active: boolean;
+  is_private: boolean;
+  created_by: string;
   budget_categories: { id: string; name: string } | null;
 };
 const RULE_SELECT =
-  "id, kind, title, amount_cents, category_id, frequency, anchor_date, installment_dates, end_date, template, auto_create, materialized_until, active, budget_categories(id, name)";
+  "id, kind, title, amount_cents, category_id, frequency, anchor_date, installment_dates, end_date, template, auto_create, materialized_until, active, is_private, created_by, budget_categories(id, name)";
 
 const asRule = (r: RuleRow) => ({ frequency: r.frequency, anchorDate: r.anchor_date, installmentDates: r.installment_dates, endDate: r.end_date });
 
@@ -47,6 +49,8 @@ function toRule(ctx: HouseholdCtx, r: RuleRow) {
     template: r.template,
     autoCreate: r.auto_create,
     active: r.active,
+    /** Private rules belong to the personal budget: only their author sees them. */
+    isPrivate: r.is_private,
     nextDueOn: next,
     next: next ? { label: formatDateFr(next), relative: relativeDayFr(next, t) } : null,
   };
@@ -55,10 +59,16 @@ function toRule(ctx: HouseholdCtx, r: RuleRow) {
 export const listRecurring = defineOp({
   name: "recurring.list",
   kind: "read",
-  input: z.object({ kind: z.enum(["expense", "bill"]).optional(), includeInactive: z.boolean().optional() }),
+  input: z.object({
+    kind: z.enum(["expense", "bill"]).optional(),
+    includeInactive: z.boolean().optional(),
+    /** true: only my private rules (personal budget); false: only shared rules. Omit for both. */
+    isPrivate: z.boolean().optional(),
+  }),
   run: async (ctx, input) => {
     let q = ctx.db.from("recurring_rules").select(RULE_SELECT).eq("household_id", ctx.household.id);
     if (input.kind) q = q.eq("kind", input.kind);
+    if (input.isPrivate !== undefined) q = q.eq("is_private", input.isPrivate);
     if (!input.includeInactive) q = q.eq("active", true);
     const rows = unwrap(await q.order("anchor_date")) as RuleRow[];
     const rules = rows.map((r) => toRule(ctx, r)).sort((a, b) => (a.nextDueOn ?? "9999") < (b.nextDueOn ?? "9999") ? -1 : 1);
@@ -84,8 +94,19 @@ export const upsertRecurring = defineOp({
     /** Automatically add the expense on each due date (on the next app open). */
     autoCreate: z.boolean().optional(),
     active: z.boolean().optional(),
+    /** Personal (private) rule: paid by me, never split, visible to me only. */
+    isPrivate: z.boolean().optional(),
   }),
   run: async (ctx, input) => {
+    // On edit, an omitted flag keeps the rule's current privacy (never silently shares it).
+    let isPrivate = input.isPrivate ?? false;
+    if (input.id && input.isPrivate === undefined) {
+      const cur = unwrap(
+        await ctx.db.from("recurring_rules").select("is_private").eq("household_id", ctx.household.id).eq("id", input.id).maybeSingle(),
+      ) as { is_private: boolean } | null;
+      if (!cur) throw new AppError("NOT_FOUND", "Récurrence introuvable.");
+      isPrivate = cur.is_private;
+    }
     if (input.frequency === "installments" && !input.installmentDates?.length) {
       throw new AppError("VALIDATION", "Ajoute au moins une date de versement.");
     }
@@ -101,7 +122,9 @@ export const upsertRecurring = defineOp({
       anchor_date: input.anchorDate,
       installment_dates: input.frequency === "installments" ? [...new Set(input.installmentDates)].sort() : [],
       end_date: input.endDate ?? null,
-      template: { payer: input.payer, split: input.split },
+      // A private expense is always paid by its author and never split.
+      template: isPrivate ? { payer: ctx.userId } : { payer: input.payer, split: input.split },
+      is_private: isPrivate,
       auto_create: input.autoCreate ?? false,
       active: input.active ?? true,
       // Never back-fill the past when a rule is created or edited.
@@ -153,8 +176,9 @@ export const materializeRecurring = defineOp({
             description: r.title,
             spentOn: occ,
             category: r.category_id,
-            payer: r.template?.payer ?? "commun",
-            split: r.template?.split,
+            payer: r.is_private ? "moi" : (r.template?.payer ?? "commun"),
+            split: r.is_private ? undefined : r.template?.split,
+            isPrivate: r.is_private,
             recurringRuleId: r.id,
             recurringOccurrence: occ,
             idempotencyKey: `recurring:${r.id}:${occ}`,

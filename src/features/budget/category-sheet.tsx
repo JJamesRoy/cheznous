@@ -30,6 +30,7 @@ export function CategorySheet({
   month,
   currentMonth,
   categories,
+  scope = "household",
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -38,6 +39,7 @@ export function CategorySheet({
   currentMonth: string;
   /** When set (first-budget flow), the person picks the category. */
   categories?: { id: string; name: string }[];
+  scope?: "household" | "personal";
 }) {
   return (
     <Sheet
@@ -54,6 +56,7 @@ export function CategorySheet({
           month={month}
           currentMonth={currentMonth}
           categories={categories}
+          scope={scope}
           onDone={() => onOpenChange(false)}
         />
       ) : null}
@@ -66,12 +69,14 @@ function CategorySheetBody({
   month,
   currentMonth,
   categories,
+  scope,
   onDone,
 }: {
   line: BudgetLine | null;
   month: string;
   currentMonth: string;
   categories?: { id: string; name: string }[];
+  scope: "household" | "personal";
   onDone: () => void;
 }) {
   const [categoryId, setCategoryId] = useState(line?.categoryId ?? "");
@@ -88,7 +93,7 @@ function CategorySheetBody({
     if (cents === null) return setError("Entre un montant (0 pour retirer le budget).");
     setError(null);
     try {
-      await set.mutateAsync({ category: categoryId, amount: { cents }, fromMonth: month });
+      await set.mutateAsync({ category: categoryId, amount: { cents }, fromMonth: month, scope });
       haptic("success");
       onDone();
     } catch (e) {
@@ -131,7 +136,7 @@ function CategorySheetBody({
           </Field>
         ) : null}
         <Field
-          label="Budget mensuel"
+          label={scope === "personal" ? "Budget perso mensuel" : "Budget mensuel"}
           hint={`S'applique à partir de ${monthLabel} et pour les mois suivants, jusqu'à ce que tu le changes. Les mois passés gardent leur budget.`}
           error={error}
         >
@@ -166,16 +171,16 @@ function CategorySheetBody({
 
       {line ? (
         <>
-          <MiniHistory categoryId={line.categoryId} currentMonth={currentMonth} viewedMonth={month} />
-          <CategoryExpenses categoryId={line.categoryId} from={start} to={addDays(endExclusive, -1)} monthLabel={monthLabel} />
+          <MiniHistory categoryId={line.categoryId} currentMonth={currentMonth} viewedMonth={month} scope={scope} />
+          <CategoryExpenses categoryId={line.categoryId} from={start} to={addDays(endExclusive, -1)} monthLabel={monthLabel} onlyPrivate={scope === "personal"} />
         </>
       ) : null}
     </div>
   );
 }
 
-function MiniHistory({ categoryId, currentMonth, viewedMonth }: { categoryId: string; currentMonth: string; viewedMonth: string }) {
-  const q = useOp("budget.history", { months: 6, category: categoryId });
+function MiniHistory({ categoryId, currentMonth, viewedMonth, scope }: { categoryId: string; currentMonth: string; viewedMonth: string; scope: "household" | "personal" }) {
+  const q = useOp("budget.history", { months: 6, category: categoryId, scope });
   return (
     <section className="flex flex-col gap-2" aria-labelledby="cat-hist">
       <h3 id="cat-hist" className="text-sm font-medium text-fg-muted">
