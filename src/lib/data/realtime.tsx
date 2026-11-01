@@ -19,6 +19,7 @@ const TABLE_OPS: Record<string, string[]> = {
   task_checklist_items: ["tasks.list", "tasks.get"],
   notes: ["notes.list", "notes.get", "notes.search"],
   household_members: ["session.get", "dashboard.get"],
+  households: ["session.get", "dashboard.get"],
   savings_goals: ["goals.list", "goals.get", "dashboard.get"],
   goal_contributions: ["goals.list", "goals.get", "dashboard.get"],
   projects: ["projects.list", "projects.get", "session.get"],
@@ -43,7 +44,8 @@ export function useHouseholdRealtime(householdId: string | null | undefined) {
     };
     const channel = supabase.channel(`household:${householdId}`);
     for (const table of Object.keys(TABLE_OPS)) {
-      channel.on("postgres_changes", { event: "*", schema: "public", table, filter: `household_id=eq.${householdId}` }, () => {
+      const filter = table === "households" ? `id=eq.${householdId}` : `household_id=eq.${householdId}`;
+      channel.on("postgres_changes", { event: "*", schema: "public", table, filter }, () => {
         TABLE_OPS[table].forEach((n) => pending.add(n));
         if (!timer) timer = setTimeout(flush, 120);
       });
