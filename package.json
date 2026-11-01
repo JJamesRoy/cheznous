@@ -6,7 +6,10 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "test": "vitest run --config vitest.config.mts",
+    "test:unit": "vitest run --config vitest.config.mts",
+    "test:integration": "vitest run --config vitest.integration.config.mts"
   },
   "dependencies": {
     "@hookform/resolvers": "7.0.1",
@@ -32,6 +35,7 @@
     "react-hook-form": "7.91.0",
     "react-markdown": "10.1.0",
     "remark-gfm": "4.0.1",
+    "server-only": "0.0.1",
     "sonner": "2.0.8",
     "tailwind-merge": "3.7.0",
     "vaul": "1.1.2",
