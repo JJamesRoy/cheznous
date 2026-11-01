@@ -10,7 +10,7 @@ import { AppError } from "./errors";
  * same schema whichever provider answered.
  */
 
-export const CLAUDE_MODEL = "claude-opus-5-5";
+export const CLAUDE_MODEL = "claude-sonnet-5-5";
 
 export const RecommendationSchema = z.object({
   /** Two or three sentences on the overall picture. */
@@ -66,7 +66,7 @@ async function viaAnthropic(snapshot: string): Promise<AiResult> {
     // On a safety decline, Anthropic re-runs the request on its recommended fallback model.
     betas: ["server-side-fallback-2026-07-01"],
     fallbacks: "default",
-    // Opus 5.5 always thinks; "medium" keeps each run to a few cents.
+    // Analysis of one snapshot: "medium" is enough and keeps each run to a few cents.
     output_config: { effort: "medium", format: betaZodOutputFormat(RecommendationSchema) },
     system: SYSTEM_PROMPT,
     messages: [{ role: "user", content: snapshot }],

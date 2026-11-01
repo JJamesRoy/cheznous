@@ -44,6 +44,6 @@ export const serverEnv = {
   },
   /** OpenRouter model slug for the fallback (check the exact id on openrouter.ai/models). */
   get openRouterModel() {
-    return process.env.OPENROUTER_MODEL || "anthropic/claude-opus-5.5";
+    return process.env.OPENROUTER_MODEL || "deepseek/deepseek-v4.1-flash";
   },
 };
