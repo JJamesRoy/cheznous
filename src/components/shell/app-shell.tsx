@@ -22,6 +22,8 @@ export type AppShellProps = {
   householdName: string;
   /** Opens the quick-add expense sheet (center "+", N, sidebar button). */
   onQuickAdd: () => void;
+  /** Mobile center "+": adapts to the current page. Defaults to `onQuickAdd`. */
+  tabBarAdd?: { onClick: () => void; label: string };
   /** Mobile top bar title; defaults to the current section's name. */
   title?: React.ReactNode;
   /** Extra buttons in the mobile top bar (left of the privacy toggle). */
@@ -42,6 +44,7 @@ export function AppShell({
   user,
   householdName,
   onQuickAdd,
+  tabBarAdd,
   title,
   topBarActions,
   commandActions,
@@ -120,7 +123,7 @@ export function AppShell({
             {children}
           </main>
         </div>
-        <TabBar onQuickAdd={onQuickAdd} />
+        <TabBar onQuickAdd={tabBarAdd?.onClick ?? onQuickAdd} label={tabBarAdd?.label} />
       </div>
       {commandOpen || commandUsed ? (
         <CommandMenu open={commandOpen} onOpenChange={setCommandOpen} actions={actions} search={search} />

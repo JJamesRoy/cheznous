@@ -25,7 +25,7 @@ function activeTab(pathname: string): string | null {
 }
 
 /** Mobile bottom tab bar (hidden ≥ 1024px). */
-export function TabBar({ onQuickAdd }: { onQuickAdd: () => void }) {
+export function TabBar({ onQuickAdd, label = "Nouvelle dépense" }: { onQuickAdd: () => void; label?: string }) {
   const pathname = usePathname();
   const current = activeTab(pathname);
   return (
@@ -41,7 +41,7 @@ export function TabBar({ onQuickAdd }: { onQuickAdd: () => void }) {
               <li key="add" className="flex items-center justify-center">
                 <button
                   type="button"
-                  aria-label="Nouvelle dépense"
+                  aria-label={label}
                   onClick={() => {
                     haptic("light");
                     onQuickAdd();

@@ -1,14 +1,14 @@
 "use client";
 
 import { useEffect, useMemo, useRef, type ReactNode } from "react";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { CheckSquare, ListPlus, NotebookPen, Receipt } from "lucide-react";
 import { AppShell, type CommandAction } from "@/components/shell";
 import { Skeleton } from "@/components/ui";
 import { callOp } from "@/lib/data/api";
 import { useOp } from "@/lib/data/query";
 import { useHouseholdRealtime } from "@/lib/data/realtime";
-import { QuickAddProvider, useQuickAdd } from "./quick-add";
+import { QuickAddProvider, useQuickAdd, type QuickAddKind } from "./quick-add";
 import { SessionProvider, type HouseholdSession } from "./session";
 import { QuickAddSheets } from "./quick-add-sheets";
 import { OfflineBanner } from "./offline-banner";
@@ -44,6 +44,8 @@ export function AppFrame({ children }: { children: ReactNode }) {
 
 function SignedIn({ session, children }: { session: HouseholdSession; children: ReactNode }) {
   const quickAdd = useQuickAdd();
+  const pathname = usePathname();
+  const contextual = contextualQuickAdd(pathname);
   useHouseholdRealtime(session.household.id);
 
   // Create due recurring expenses once per app open (idempotent server-side).
@@ -77,6 +79,7 @@ function SignedIn({ session, children }: { session: HouseholdSession; children: 
       user={{ name: me?.displayName ?? session.user.displayName }}
       householdName={session.household.name}
       onQuickAdd={() => quickAdd.open("expense")}
+      tabBarAdd={{ onClick: () => quickAdd.open(contextual.kind, contextual.prefill), label: QUICK_ADD_LABELS[contextual.kind] }}
       commandActions={actions}
       search={async (q, signal) => {
         const r = await callOp("notes.search", { q, limit: 8 }, { signal });
@@ -110,4 +113,21 @@ function FrameSkeleton({ error, onRetry }: { error: string | null; onRetry: () =
       )}
     </div>
   );
+}
+
+const QUICK_ADD_LABELS: Record<QuickAddKind, string> = {
+  expense: "Nouvelle dépense",
+  item: "Ajouter un article",
+  task: "Nouvelle tâche",
+  note: "Nouvelle note",
+};
+
+/** The mobile « + » follows the current page: lists add an item (to the open list), tasks a task, notes a note. */
+export function contextualQuickAdd(pathname: string): { kind: QuickAddKind; prefill?: Record<string, unknown> } {
+  const list = /^\/listes\/([^/]+)/.exec(pathname);
+  if (list) return { kind: "item", prefill: { listId: decodeURIComponent(list[1]) } };
+  if (pathname === "/listes") return { kind: "item" };
+  if (pathname === "/taches" || pathname.startsWith("/taches/")) return { kind: "task" };
+  if (pathname === "/notes" || pathname.startsWith("/notes/")) return { kind: "note" };
+  return { kind: "expense" };
 }
