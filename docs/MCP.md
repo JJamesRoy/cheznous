@@ -102,6 +102,7 @@ claude mcp add --transport http chez-nous http://localhost:3000/api/mcp
 | `get_balances` | read | « Qui doit combien à qui ? » |
 | `create_settlement` | write, needs `confirm` | `{ "confirm": true, "idempotency_key": "…" }` |
 | `get_budget` | read | `{ "month": "2026-11" }` |
+| `set_budget` | write | `{ "category": "épicerie", "amount": "400", "from_month": "2026-12" }` |
 | `list_budgets` | read | `{ "months": 6 }` |
 | `get_spending_summary` | read | « Combien avons-nous dépensé en épicerie ce mois-ci ? » → `{ "category": "épicerie" }`; « Compare octobre et novembre » → `{ "month": "2026-11", "compare_month": "2026-10" }` |
 | `list_recurring_expenses` | read | |

@@ -212,6 +212,21 @@ export function registerTools(register: Register) {
   });
 
   register({
+    name: "set_budget",
+    title: "Définir un budget",
+    description:
+      "Fixe le budget mensuel d'une catégorie à partir d'un mois (par défaut : le mois courant) et pour les mois suivants, jusqu'au prochain changement. Montant 0 = retire le budget. scope=personal : budget perso de la personne connectée.",
+    input: {
+      category: z.string().max(100).describe("Nom (accents ignorés) ou id de catégorie"),
+      amount: money,
+      from_month: month.optional(),
+      scope: z.enum(["household", "personal"]).optional(),
+    },
+    annotations: WRITE,
+    run: async (ctx, a) => execute(budget.setBudget, ctx, { category: a.category, amount: a.amount, fromMonth: a.from_month, scope: a.scope }),
+  });
+
+  register({
     name: "list_budgets",
     title: "Historique des budgets",
     description: "Totaux mensuels dépensés vs budget pour les derniers mois, globalement ou pour une catégorie.",

@@ -157,7 +157,7 @@ describe("MCP: the eight reference questions, through the tools", () => {
     const { tools } = await client.listTools();
     const expected = [
       "get_household_context", "get_household_dashboard", "list_expenses", "get_expense", "create_expense", "update_expense",
-      "get_balances", "create_settlement", "get_budget", "list_budgets", "get_spending_summary", "list_recurring_expenses",
+      "get_balances", "create_settlement", "get_budget", "set_budget", "list_budgets", "get_spending_summary", "list_recurring_expenses",
       "list_upcoming_bills", "list_shopping_lists", "get_shopping_list", "add_shopping_item", "update_shopping_item",
       "mark_item_purchased", "list_tasks", "create_task", "update_task", "complete_task", "search_notes", "create_note",
       "get_note", "get_property_info", "list_property_documents", "list_maintenance_tasks", "get_key_dates",
