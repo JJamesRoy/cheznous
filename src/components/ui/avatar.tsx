@@ -1,5 +1,6 @@
 "use client";
 
+import { createContext, useContext } from "react";
 import { Avatar as AvatarPrimitive } from "radix-ui";
 import { cn } from "@/lib/ui/cn";
 import { personTone } from "@/lib/ui/people";
@@ -40,8 +41,17 @@ export type AvatarProps = {
   tone?: "a" | "b" | "joint" | "neutral";
 };
 
+/**
+ * Resolves a person's photo from their display name (household members), so every avatar in
+ * the app shows the photo without each call site having to fetch it. An explicit `src` wins.
+ */
+const AvatarPhotoContext = createContext<(name: string) => string | null>(() => null);
+export const AvatarPhotoProvider = AvatarPhotoContext.Provider;
+
 /** Round avatar: photo, or initials on a neutral tone. */
-export function Avatar({ name, src, size = "md", className, decorative = false, tone }: AvatarProps) {
+export function Avatar({ name, src: explicitSrc, size = "md", className, decorative = false, tone }: AvatarProps) {
+  const resolve = useContext(AvatarPhotoContext);
+  const src = explicitSrc ?? resolve(name);
   return (
     <AvatarPrimitive.Root
       className={cn(

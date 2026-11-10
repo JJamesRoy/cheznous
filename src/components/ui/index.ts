@@ -1,5 +1,5 @@
 export { AssigneePicker, type Assignee, type AssigneePickerProps } from "./assignee-picker";
-export { Avatar, AvatarStack, initials, type AvatarProps, type AvatarSize } from "./avatar";
+export { Avatar, AvatarPhotoProvider, AvatarStack, initials, type AvatarProps, type AvatarSize } from "./avatar";
 export { Button, IconButton, type ButtonProps, type ButtonSize, type ButtonVariant, type IconButtonProps } from "./button";
 export { Checkbox, type CheckboxProps } from "./checkbox";
 export { Chip, ChipGroup, type ChipGroupProps, type ChipOption, type ChipProps } from "./chip";
